@@ -199,11 +199,8 @@ h2 { margin-bottom: 15px; font-size: 1.4em; border-bottom: 2px solid #16213e; pa
     <button class="btn btn-sm btn-warning" onclick="newGame()" data-i18n="newGame">New Game</button>
     <input type="text" id="saveNameInput" placeholder="Save name..." style="padding:6px 10px;border:1px solid #333;border-radius:8px;background:#1a1a2e;color:#e0e0e0;font-size:0.85em;width:140px">
     <button class="btn btn-sm btn-success" onclick="saveBackup()" style="font-size:0.85em">Save</button>
-    <select id="backupSelect" style="padding:6px 10px;border:1px solid #333;border-radius:8px;background:#1a1a2e;color:#e0e0e0;font-size:0.85em;max-width:200px">
-      <option value="">Load Backup...</option>
-    </select>
-    <button class="btn btn-sm btn-primary" onclick="loadBackup()" style="font-size:0.85em">Restore</button>
-    <button class="btn btn-sm btn-danger" onclick="deleteBackup()" style="font-size:0.85em;background:#533483">Del</button>
+    <input type="file" id="restoreFileInput" accept=".json" style="display:none" onchange="restoreBackup(event)">
+    <button class="btn btn-sm btn-primary" onclick="document.getElementById('restoreFileInput').click()" style="font-size:0.85em">Restore</button>
   </div>
   </div>
 
@@ -359,6 +356,7 @@ h2 { margin-bottom: 15px; font-size: 1.4em; border-bottom: 2px solid #16213e; pa
 <script>
 let allPokemon = {};
 let caughtData = [];
+let itemsData = [];
 let caughtPage = 1;
 const PAGE_SIZE = 10;
 let currentLang = 'en';
@@ -373,7 +371,7 @@ const LANG = {
     strongestTeam: 'Strongest team based on total stats', refresh: 'Refresh', checkAgain: 'Check Again',
     evolveAll: 'Evolve All (Level)', newGame: 'New Game', del: 'Delete',
     pokemon: 'Pokemon', filtered: '(filtered)', noMatch: 'No Pokemon match your search.',
-    noCaught: 'No Pokemon caught yet. Start adding!', prev: '\u00ab Prev', next: 'Next \u00bb',
+    noCaught: 'No Pokemon caught yet. Start adding!',     prev: '\u00ab Prev', next: 'Next \u00bb', first: 'First', last: 'Last',
     page: 'Page', totalStats: '',     availEvo: 'available evolutions', availEvo_s: 'available evolution',
     noEvo: 'No evolutions available right now. Increase the level cap or add evolution items.',
     delConfirm: 'Delete {0}?', deleted: '{0} deleted',
@@ -416,8 +414,9 @@ const LANG = {
     strongestTeam: 'Equipo m\u00e1s fuerte seg\u00fan estad\u00edsticas totales', refresh: 'Actualizar',
     checkAgain: 'Verificar Otra Vez', evolveAll: 'Evolucionar Todos (Nivel)', newGame: 'Nueva Partida', del: 'Eliminar',
     pokemon: 'Pok\u00e9mon', filtered: '(filtrados)', noMatch: 'Ning\u00fan Pok\u00e9mon coincide con tu b\u00fasqueda.',
-    noCaught: 'A\u00fan no has atrapado Pok\u00e9mon. \u00a1Empieza a agregar!', prev: '\u00ab Anterior',
-    next: 'Siguiente \u00bb', page: 'P\u00e1gina', totalStats: '',
+    noCaught: 'A\u00fan no has atrapado Pok\u00e9mon. \u00a1Empieza a agregar!',     prev: '\u00ab Anterior',
+    next: 'Siguiente \u00bb', first: 'Primera', last: '\u00daltima',
+    page: 'P\u00e1gina', totalStats: '',
     availEvo: 'evoluciones disponibles', availEvo_s: 'evoluci\u00f3n disponible',
     noEvo: 'No hay evoluciones disponibles ahora. Aumenta el l\u00edmite de nivel o agrega objetos de evoluci\u00f3n.',
     delConfirm: '\u00bfEliminar a {0}?', deleted: '{0} eliminado',
@@ -477,7 +476,18 @@ async function init() {
   await loadItems();
   await loadEvolutions();
   await loadBestTeam();
-  listBackups();
+
+  const cached = loadStateFromCache();
+  if (cached) {
+    if (caughtData.length === 0) caughtData = cached.caught;
+    if (itemsData.length === 0) itemsData = cached.items;
+    if (cached.level_cap && !document.querySelector('.gym-btn.gym-active')) {
+      document.getElementById('levelCapDisplay').textContent = cached.level_cap;
+    }
+    renderCaught();
+    renderItems();
+  }
+
   setupPokeAutocomplete();
   setupItemAutocomplete();
   setupCompareAutocomplete('compareName1', 'compare-autocomplete-list1');
@@ -695,6 +705,7 @@ async function loadCaught() {
   caughtData = await resp.json();
   caughtPage = 1;
   renderCaught();
+  saveStateToCache();
 }
 
 function renderCaught() {
@@ -772,6 +783,11 @@ function renderCaught() {
 
   if (totalPages > 1) {
     if (caughtPage > 1) {
+      const first = document.createElement('button');
+      first.className = 'btn btn-sm btn-primary';
+      first.textContent = t('first');
+      first.onclick = () => { caughtPage = 1; renderCaught(); };
+      pagination.appendChild(first);
       const prev = document.createElement('button');
       prev.className = 'btn btn-sm btn-primary';
       prev.textContent = t('prev');
@@ -788,8 +804,29 @@ function renderCaught() {
       next.textContent = t('next');
       next.onclick = () => { caughtPage++; renderCaught(); };
       pagination.appendChild(next);
+      const last = document.createElement('button');
+      last.className = 'btn btn-sm btn-primary';
+      last.textContent = t('last');
+      last.onclick = () => { caughtPage = totalPages; renderCaught(); };
+      pagination.appendChild(last);
     }
   }
+}
+
+function saveStateToCache() {
+  const state = {
+    caught: caughtData,
+    items: itemsData,
+    level_cap: parseInt(document.getElementById('levelCapDisplay').textContent) || 14
+  };
+  try { localStorage.setItem('pokemon_optimizer_state', JSON.stringify(state)); } catch(e) {}
+}
+
+function loadStateFromCache() {
+  try {
+    const data = localStorage.getItem('pokemon_optimizer_state');
+    return data ? JSON.parse(data) : null;
+  } catch(e) { return null; }
 }
 
 const spriteCache = {};
@@ -842,79 +879,120 @@ async function deleteAllCaught() {
   await loadBestTeam();
 }
 
-async function listBackups() {
-  const resp = await fetch('/api/backups');
-  const backups = await resp.json();
-  const sel = document.getElementById('backupSelect');
-  sel.innerHTML = '<option value="">Load Backup...</option>';
-  for (const b of backups) {
-    const opt = document.createElement('option');
-    opt.value = b.timestamp;
-    const label = b.name ? b.name : b.timestamp;
-    opt.textContent = label + (b.complete ? '' : ' (partial)');
-    sel.appendChild(opt);
-  }
-}
-
 async function saveBackup() {
-  const name = document.getElementById('saveNameInput').value.trim();
-  if (!name) { showNotification('Enter a name for the save'); return; }
-  const resp = await fetch('/api/backups/save', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({name})
-  });
-  const data = await resp.json();
-  if (resp.ok) {
-    showNotification(`Saved as "${name}"`);
-    document.getElementById('saveNameInput').value = '';
-    listBackups();
-  } else {
-    showNotification(data.error || 'Save failed');
+  const name = document.getElementById('saveNameInput').value.trim() || 'backup';
+
+  const cap = parseInt(document.getElementById('levelCapDisplay').textContent) || 14;
+  const saveData = {
+    name: name,
+    timestamp: new Date().toISOString(),
+    version: 1,
+    caught: caughtData,
+    items: itemsData,
+    level_cap: cap
+  };
+
+  saveStateToCache();
+
+  const blob = new Blob([JSON.stringify(saveData, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `pokemon_save_${name.replace(/[^a-zA-Z0-9]/g, '_')}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+
+  showNotification(`Saved as "${name}"`);
+  document.getElementById('saveNameInput').value = '';
+}
+
+async function restoreBackup(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  try {
+    const text = await file.text();
+    const data = JSON.parse(text);
+
+    if (!data.caught || !data.items) {
+      showNotification('Invalid save file: missing caught or items data');
+      return;
+    }
+
+    if (!confirm(`Restore backup "${data.name || 'unknown'}"? Current data will be replaced.`)) {
+      event.target.value = '';
+      return;
+    }
+
+    caughtData = data.caught;
+    itemsData = data.items;
+    const cap = data.level_cap || 14;
+    document.getElementById('levelCapDisplay').textContent = cap;
+
+    saveStateToCache();
+
+    renderCaught();
+    renderItems();
+    loadBestTeam();
+    loadEvolutions();
+
+    try {
+      await fetch('/api/caught/clear', { method: 'DELETE' });
+      for (const c of caughtData) {
+        await fetch('/api/caught', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(c)
+        });
+      }
+      await fetch('/api/level-cap', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({level_cap: cap})
+      });
+      await fetch('/api/items', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({item: '_clear_', quantity: 0})
+      });
+      for (const item of itemsData) {
+        await fetch('/api/items', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({item: item.name, quantity: item.stock})
+        });
+      }
+    } catch(e) {}
+
+    showNotification(`Backup "${data.name || 'unknown'}" restored!`);
+  } catch(e) {
+    showNotification('Failed to load save file: ' + e.message);
   }
-}
 
-async function deleteBackup() {
-  const ts = document.getElementById('backupSelect').value;
-  if (!ts) return;
-  if (!confirm(`Delete backup "${ts}"?`)) return;
-  await fetch('/api/backups/delete', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({timestamp: ts})
-  });
-  showNotification('Backup deleted');
-  listBackups();
-}
-
-async function loadBackup() {
-  const ts = document.getElementById('backupSelect').value;
-  if (!ts) return;
-  if (!confirm(`Restore backup "${ts}"? Current data will be saved as a backup first.`)) return;
-  await fetch('/api/new-game', { method: 'POST' });
-  await fetch('/api/backups/restore', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({timestamp: ts})
-  });
-  showNotification(`Backup "${ts}" restored!`);
-  await loadCaught();
-  await loadEvolutions();
-  await loadBestTeam();
-  await loadItems();
-  loadLevelCap();
+  event.target.value = '';
 }
 
 async function newGame() {
-  if (!confirm('Current data will be saved as a backup and a fresh game will start. Continue?')) return;
-  await fetch('/api/new-game', { method: 'POST' });
-  showNotification('New game started! Previous data backed up.');
-  await loadCaught();
-  await loadEvolutions();
-  await loadBestTeam();
-  await loadItems();
-  loadLevelCap();
+  if (!confirm('Start a new game? Current data will be lost!')) return;
+  if (!confirm('Really? All data will be lost forever!')) return;
+
+  caughtData = [];
+  itemsData = [];
+  document.getElementById('levelCapDisplay').textContent = 14;
+  gymMaxIdx = -1;
+  document.querySelectorAll('.gym-btn').forEach(b => b.classList.remove('gym-active'));
+  saveStateToCache();
+
+  try {
+    await fetch('/api/new-game', { method: 'POST' });
+  } catch(e) {}
+
+  renderCaught();
+  renderItems();
+  loadBestTeam();
+  loadEvolutions();
   document.getElementById('addNotification').innerHTML = '';
+  showNotification('New game started!');
 }
 
 async function loadBestTeam() {
@@ -985,6 +1063,7 @@ function setGymCap(el, val) {
     b.classList.toggle('gym-active', parseInt(b.dataset.idx) <= newMax);
   });
   document.getElementById('levelCapDisplay').textContent = newCap;
+  saveStateToCache();
   fetch('/api/level-cap', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
@@ -1001,6 +1080,7 @@ async function loadLevelCap() {
   const data = await resp.json();
   const cap = data.level_cap || 14;
   document.getElementById('levelCapDisplay').textContent = cap;
+  saveStateToCache();
   const gymCaps = [23,30,39,49,54,59,66,75];
   gymMaxIdx = -1;
   for (let i = gymCaps.length - 1; i >= 0; i--) {
@@ -1013,10 +1093,14 @@ async function loadLevelCap() {
 
 async function loadItems() {
   const resp = await fetch('/api/items');
-  const items = await resp.json();
+  itemsData = await resp.json();
+  renderItems();
+}
+
+function renderItems() {
   const div = document.getElementById('itemsList');
   div.innerHTML = '';
-  for (const item of items) {
+  for (const item of itemsData) {
     const pill = document.createElement('span');
     pill.className = 'item-pill';
     const stockInfo = item.stock > 1 ? ` <span class="stock">x${item.stock}</span>` : '';
@@ -1037,14 +1121,20 @@ async function addItem() {
   });
   input.value = '';
   document.getElementById('itemQty').value = '1';
+  const existing = itemsData.find(i => i.name === item);
+  if (existing) existing.stock += qty;
+  else itemsData.push({name: item, stock: qty});
+  renderItems();
+  saveStateToCache();
   showNotification(t('addedItem', item, qty));
-  await loadItems();
   await loadEvolutions();
 }
 
 async function removeItem(item) {
   await fetch('/api/items/' + encodeURIComponent(item), { method: 'DELETE' });
-  await loadItems();
+  itemsData = itemsData.filter(i => i.name !== item);
+  renderItems();
+  saveStateToCache();
   await loadEvolutions();
 }
 

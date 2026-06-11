@@ -315,7 +315,7 @@ def api_new_game():
             saved[label] = backup_file
     save_json(CAUGHT_FILE, [])
     save_json(ITEMS_FILE, [])
-    save_json(CONFIG_FILE, {"level_cap": 5})
+    save_json(CONFIG_FILE, {"level_cap": 14})
     return jsonify({"success": True, "backup_ts": ts})
 
 @app.route("/api/backups")
@@ -462,16 +462,16 @@ def api_best_stat():
 
 @app.route("/api/level-cap", methods=["GET", "POST"])
 def api_level_cap():
-    config = load_json(CONFIG_FILE, {"level_cap": 5})
+    config = load_json(CONFIG_FILE, {"level_cap": 14})
     if request.method == "POST":
-        config["level_cap"] = request.json.get("level_cap", 5)
+        config["level_cap"] = request.json.get("level_cap", 14)
         save_json(CONFIG_FILE, config)
     return jsonify(config)
 
 @app.route("/api/evolutions/available")
 def api_available_evolutions():
     caught = get_caught()
-    config = load_json(CONFIG_FILE, {"level_cap": 5})
+    config = load_json(CONFIG_FILE, {"level_cap": 14})
     items_owned = get_owned_item_names()
     level_cap = config["level_cap"]
     available = []
@@ -623,7 +623,7 @@ def api_evolve():
 @app.route("/api/evolve-all", methods=["POST"])
 def api_evolve_all():
     caught = get_caught()
-    config = load_json(CONFIG_FILE, {"level_cap": 5})
+    config = load_json(CONFIG_FILE, {"level_cap": 14})
     level_cap = config["level_cap"]
     evolved_count = 0
     evolved = []
