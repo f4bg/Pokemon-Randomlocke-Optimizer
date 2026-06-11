@@ -1,7 +1,7 @@
 import csv
 import os
 import json
-from flask import Flask, jsonify, request, render_template, send_from_directory
+from flask import Flask, jsonify, request, send_file, send_from_directory
 import requests
 
 app = Flask(__name__)
@@ -188,7 +188,11 @@ type_chart, all_types = load_type_chart()
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return send_file(os.path.join(DATA_DIR, "index.html"))
+
+@app.route("/data.js")
+def serve_data_js():
+    return send_file(os.path.join(DATA_DIR, "data.js"))
 
 @app.route("/api/pokemon")
 def api_pokemon():

@@ -1,12 +1,1389 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html>
-    <head>
-        <title>Redirecting</title>
-        <meta http-equiv="REFRESH" content="0;url=templates/">
-    </head>
-    <body>
-        <center>
-            Redirecting to the real root folder.
-        </center>
-    </body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pokemon Team Optimizer</title>
+<script src="data.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1a1a2e; color: #e0e0e0; padding: 20px; }
+.container { max-width: 1400px; margin: 0 auto; }
+h1 { color: #e94560; margin-bottom: 20px; font-size: 2em; display:inline-block; }
+h2 { margin-bottom: 15px; font-size: 1.4em; border-bottom: 2px solid #16213e; padding-bottom: 8px; color: #e94560; }
+.grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+@media (max-width: 1200px) { .grid { gap: 10px; } .card { padding: 12px; } }
+@media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+@media (max-width: 600px) {
+  body { padding: 8px; }
+  h1 { font-size: 1.4em; margin-bottom: 12px; }
+  h2 { font-size: 1.1em; margin-bottom: 10px; }
+  .card { padding: 10px; border-radius: 8px; }
+  .grid { gap: 8px; }
+  .btn { padding: 10px 16px; font-size: 0.9em; min-height: 44px; }
+  .btn-sm { padding: 8px 12px; font-size: 0.8em; min-height: 36px; }
+  .header-actions { margin-left: 0; width: 100%; gap: 4px; }
+  .header-actions input[type="text"] { width: 100% !important; }
+  .header-wrap { gap: 6px; }
+  .pokemon-item { flex-wrap: wrap; gap: 6px; padding: 8px; }
+  .pokemon-item .sprite { width: 48px; height: 48px; }
+  .pokemon-item .actions { width: 100%; justify-content: flex-end; }
+  .pokemon-item .stats-bar .stat-tag { font-size: 0.65em; padding: 2px 5px; }
+  .team-member { flex-wrap: wrap; }
+  .team-member img { width: 48px; height: 48px; }
+  .team-grid { grid-template-columns: 1fr; }
+  .section-header { flex-direction: column; align-items: stretch; }
+  .section-header > div { flex-wrap: wrap; gap: 4px; }
+  .section-header input, .section-header select { font-size: 0.85em; width: 100% !important; }
+  .tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; gap: 0; flex-wrap: nowrap; }
+  .tab { padding: 10px 14px; font-size: 0.85em; white-space: nowrap; }
+  .evo-item { flex-wrap: wrap; gap: 6px; padding: 8px; }
+  .evo-item .arrow { font-size: 1.2em; }
+  .evo-item span[style*="min-width"] { min-width: auto !important; }
+  .form-modal-content { padding: 16px; margin: 10px; width: calc(100% - 20px); max-height: 90vh; }
+  .form-options { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; }
+  .form-option { padding: 8px; }
+  .form-option img { width: 64px; height: 64px; }
+  .items-section { gap: 6px; }
+  .item-pill { font-size: 0.78em; padding: 3px 10px; }
+  .level-cap-section { gap: 8px; }
+  .level-cap-section input { width: 60px; font-size: 1em; }
+  .compare-stat-row .stat-val { font-size: 0.75em; min-width: 24px; }
+  .compare-stat-row .stat-label { min-width: 32px; font-size: 0.65em; }
+  #compareResults > div[style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
+  .type-icon { width: 120px; height: 28px; }
+  .type-icon-sm { width: 72px; height: 18px; }
+  .notification { right: 8px; left: 8px; max-width: none; top: 8px; }
+  .add-item-row { flex-direction: column; gap: 6px; }
+  .add-item-row input[type="number"] { width: 100%; }
+  .add-item-row .autocomplete { width: 100%; }
+  #statQuery > div[style*="flex"] { flex-direction: column; align-items: stretch; }
+  #statQuery .form-group { min-width: auto; }
+  .autocomplete-items { max-height: 200px; font-size: 0.9em; }
+  .autocomplete-item { padding: 12px 10px; min-height: 44px; }
+  .gym-btn { font-size: 0.7em !important; padding: 8px 4px !important; }
+  #levelCapDisplay { font-size: 2.2em !important; }
+}
+.card { background: #16213e; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+.form-group { margin-bottom: 12px; }
+.form-group label { display: block; margin-bottom: 5px; color: #aaa; font-size: 0.9em; }
+.form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #333; border-radius: 8px; background: #1a1a2e; color: #e0e0e0; font-size: 1em; }
+.form-group input:focus { outline: none; border-color: #e94560; }
+.btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 1em; font-weight: 600; transition: all 0.2s; }
+.btn-primary { background: #e94560; color: white; }
+.btn-primary:hover { background: #c73650; }
+.btn-success { background: #0f3460; color: white; }
+.btn-success:hover { background: #1a4d8f; }
+.btn-danger { background: #533483; color: white; }
+.btn-danger:hover { background: #6b42a3; }
+.btn-warning { background:#e94560; color:white; }
+.btn-warning:hover { background:#c73650; }
+.btn-sm { padding: 6px 12px; font-size: 0.85em; }
+.autocomplete { position: relative; }
+.autocomplete-items { position: absolute; top: 100%; left: 0; right: 0; background: #1a1a2e; border: 1px solid #333; border-top: none; border-radius: 0 0 8px 8px; max-height: 250px; overflow-y: auto; z-index: 1000; }
+.autocomplete-item { padding: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+.autocomplete-item:hover { background: #0f3460; }
+.autocomplete-item .info { font-size: 0.8em; color: #888; }
+.pokemon-list { margin-top: 15px; }
+.pokemon-item { display: flex; align-items: center; padding: 10px; margin-bottom: 8px; background: #1a1a2e; border-radius: 8px; transition: all 0.2s; }
+.pokemon-item:hover { background: #0f3460; }
+.pokemon-item .sprite { width: 64px; height: 64px; margin-right: 12px; image-rendering: pixelated; background: #111; border-radius: 8px; }
+.pokemon-item .info { flex: 1; }
+.pokemon-item .info .name { font-weight: 600; font-size: 1.1em; }
+.pokemon-item .info .types { font-size: 0.85em; color: #aaa; margin-top: 4px; }
+.pokemon-item .actions { display: flex; gap: 6px; }
+.pokemon-item .stats-bar { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
+.pokemon-item .stats-bar .stat-tag { padding: 2px 8px; border-radius: 4px; font-size: 0.75em; font-weight: 600; }
+.stat-tag.total { background: #e94560; color: white; }
+.stat-tag.hp { background: #ff4444; color: white; }
+.stat-tag.attack { background: #ff8c00; color: white; }
+.stat-tag.defense { background: #4caf50; color: white; }
+.stat-tag.sp_atk { background: #9c27b0; color: white; }
+.stat-tag.sp_def { background: #2196f3; color: white; }
+.stat-tag.speed { background: #ffeb3b; color: #333; }
+.team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; margin-top: 10px; }
+.team-member { background: #1a1a2e; border-radius: 8px; padding: 10px; display: flex; align-items: center; gap: 12px; }
+.team-member img { width: 64px; height: 64px; image-rendering: pixelated; flex-shrink: 0; }
+.team-member .info { flex: 1; min-width: 0; }
+.team-member .name { font-weight: 600; }
+.team-member .value { color: #e94560; font-weight: 700; font-size: 1.1em; }
+.team-member .sub { font-size: 0.8em; color: #aaa; }
+@media (min-width: 1400px) { .team-grid { grid-template-columns: repeat(6, 1fr); } }
+.highlight { background: #ffd700; color: #333; padding: 2px 10px; border-radius: 4px; font-weight: 600; font-size: 0.85em; animation: pulse 2s infinite; margin:4px; display:inline-block; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+.evo-item { display: flex; align-items: center; padding: 10px; background: #1a1a2e; border-radius: 8px; margin-bottom: 8px; gap: 10px; flex-wrap:wrap; }
+.evo-item .arrow { color: #e94560; font-size: 1.5em; font-weight: 700; }
+.evo-item .method { font-size: 0.8em; padding: 2px 8px; border-radius: 4px; background: #333; }
+.evo-item .method.item { background: #533483; color: white; }
+.evo-item .method.level { background: #0f3460; color: white; }
+.evo-item .method.happiness { background: #e94560; color: white; }
+.gym-btn.gym-active { background: #c73650 !important; color: #fff !important; }
+
+.tabs { display: flex; gap: 0; margin-bottom: 15px; border-bottom: 2px solid #333; }
+.tab { padding: 10px 20px; cursor: pointer; background: none; border: none; color: #888; font-size: 1em; font-weight: 600; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+.tab.active { color: #e94560; border-bottom-color: #e94560; }
+.tab:hover { color: #e0e0e0; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.level-cap-section { display: flex; align-items: center; gap: 15px; flex-wrap:wrap; }
+.level-cap-section input { width: 80px; padding: 8px; border: 1px solid #333; border-radius: 8px; background: #1a1a2e; color: #e0e0e0; font-size: 1.2em; text-align: center; }
+.items-section { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.item-pill { padding: 4px 14px; border-radius: 20px; background: #333; font-size: 0.85em; display: flex; align-items: center; gap: 8px; }
+.item-pill .remove { cursor: pointer; color: #e94560; font-weight: 700; }
+.item-pill .remove:hover { color: #ff6b6b; }
+.item-pill .stock { color:#4caf50; font-weight:700; }
+.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap:wrap; gap:8px; }
+.empty-state { text-align: center; padding: 30px; color: #666; font-size: 1.1em; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; font-weight: 600; margin-left: 6px; }
+.badge.bug { background: #a8b820; color: #333; }
+.badge.dark { background: #705848; color: white; }
+.badge.dragon { background: #7038f8; color: white; }
+.badge.electric { background: #f8d030; color: #333; }
+.badge.fairy { background: #ee99ac; color: #333; }
+.badge.fighting { background: #c03028; color: white; }
+.badge.fire { background: #f08030; color: white; }
+.badge.flying { background: #a890f0; color: #333; }
+.badge.ghost { background: #705898; color: white; }
+.badge.grass { background: #78c850; color: #333; }
+.badge.ground { background: #e0c068; color: #333; }
+.badge.ice { background: #98d8d8; color: #333; }
+.badge.normal { background: #a8a878; color: #333; }
+.badge.poison { background: #a040a0; color: white; }
+.badge.psychic { background: #f85888; color: white; }
+.badge.rock { background: #b8a038; color: #333; }
+.badge.steel { background: #b8b8d0; color: #333; }
+.badge.water { background: #6890f0; color: white; }
+.notification { position: fixed; top: 20px; right: 20px; background: #e94560; color: white; padding: 15px 25px; border-radius: 8px; z-index: 10000; box-shadow: 0 4px 15px rgba(233,69,96,0.4); animation: slideIn 0.3s, fadeOut 0.3s 4.7s; max-width: 350px; }
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+.add-item-row { display:flex; gap:6px; align-items:start; flex-wrap:wrap; }
+.add-item-row input[type=number] { width:60px; padding:8px; border:1px solid #333;border-radius:8px;background:#1a1a2e;color:#e0e0e0;text-align:center; }
+.add-item-row .autocomplete { flex:1; }
+.header-wrap { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-bottom:20px; }
+.header-wrap h1 { margin-bottom:0; }
+.header-actions { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-left:auto; }
+.form-modal { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.75); z-index:9999; align-items:center; justify-content:center; }
+.form-modal-content { background:#16213e; border-radius:12px; padding:24px; max-width:650px; width:90%; max-height:80vh; overflow-y:auto; }
+.form-modal-content h3 { color:#e94560; margin-bottom:16px; }
+.form-options { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:12px; }
+.form-option { background:#1a1a2e; border:2px solid #333; border-radius:10px; padding:12px; text-align:center; cursor:pointer; transition:all 0.2s; }
+.form-option:hover { border-color:#e94560; background:#0f3460; }
+.form-option img { width:96px; height:96px; image-rendering:pixelated; display:block; margin:0 auto; }
+.form-option .form-name { font-weight:600; margin-top:6px; font-size:0.9em; color:#e0e0e0; }
+.form-option .form-type { font-size:0.75em; color:#aaa; margin-top:4px; }
+.form-modal-close { float:right; background:none; border:none; color:#e94560; font-size:1.5em; cursor:pointer; padding:0 4px; }
+.compare-stat-row { display:flex; align-items:center; margin:5px 0; gap:0; }
+.compare-stat-row .bar-side { flex:1; display:flex; align-items:center; height:22px; }
+.compare-stat-row .bar-side.left { justify-content:flex-end; }
+.compare-stat-row .bar-side.right { justify-content:flex-start; }
+.compare-stat-row .bar { display:inline-block; height:16px; border-radius:4px; transition:width 0.3s; max-width:100%; min-width:2px; }
+.compare-stat-row .bar.left { border-radius:4px 0 0 4px; }
+.compare-stat-row .bar.right { border-radius:0 4px 4px 0; }
+.compare-stat-row .stat-label { min-width:42px; text-align:center; font-weight:bold; font-size:0.75em; color:#888; flex-shrink:0; }
+.compare-stat-row .stat-val { font-weight:600; min-width:30px; font-size:0.85em; }
+.compare-stat-row .stat-val.left { text-align:right; }
+.compare-stat-row .stat-val.right { text-align:left; }
+.type-icon { width:200px; height:48px; }
+.type-icon-sm { width:100px; height:24px; }
+.eff-section { margin-bottom:10px; }
+.eff-section .eff-label { font-size:0.8em; font-weight:600; margin-bottom:4px; }
+.eff-types { display:flex; flex-wrap:wrap; gap:4px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header-wrap">
+  <h1 data-i18n="title">Pok&eacute;mon Team Optimizer</h1>
+  <div class="header-actions">
+    <button class="btn btn-sm" id="langToggle" onclick="toggleLang()" style="background:#0f3460;color:white;border:none;border-radius:8px;padding:6px 12px;cursor:pointer;font-weight:600;font-size:0.85em;margin-right:4px">EN</button>
+    <button class="btn btn-sm btn-danger" onclick="evolveAll()" data-i18n="evolveAll">Evolve All (Level)</button>
+    <button class="btn btn-sm btn-warning" onclick="newGame()" data-i18n="newGame">New Game</button>
+    <input type="text" id="saveNameInput" placeholder="Save name..." style="padding:6px 10px;border:1px solid #333;border-radius:8px;background:#1a1a2e;color:#e0e0e0;font-size:0.85em;width:140px">
+    <button class="btn btn-sm btn-success" onclick="saveBackup()" style="font-size:0.85em">Save</button>
+    <input type="file" id="restoreFileInput" accept=".json" style="display:none" onchange="restoreBackup(event)">
+    <button class="btn btn-sm btn-primary" onclick="document.getElementById('restoreFileInput').click()" style="font-size:0.85em">Restore</button>
+  </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2 data-i18n="addPokemon">Add Pokemon</h2>
+      <div class="form-group">
+        <label data-i18n="pokeNameLabel">Pokemon Name</label>
+        <div class="autocomplete" id="autocomplete-caught">
+          <input type="text" id="pokeName" data-i18n-placeholder="pokeNamePlaceholder" placeholder="Type pokemon name...">
+          <div class="autocomplete-items" id="autocomplete-list"></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label data-i18n="nickLabel">Nickname (optional)</label>
+        <input type="text" id="pokeNick" data-i18n-placeholder="nickPlaceholder" placeholder="Nickname">
+      </div>
+      <div style="text-align:center;margin-top:40px;margin-bottom:-10px"><button class="btn btn-primary" onclick="addCaught()" data-i18n="addToTeam">Add to Team</button></div>
+      <div id="addNotification" style="margin-top:10px"></div>
+    </div>
+
+    <div class="form-modal" id="formModal">
+      <div class="form-modal-content">
+        <button class="form-modal-close" onclick="closeFormPicker()">&times;</button>
+        <h3 id="formPokeTitle" data-i18n="chooseForm">Choose a form:</h3>
+        <div class="form-options" id="formOptions"></div>
+      </div>
+    </div>
+
+    
+      <div class="card">
+        <h2 data-i18n="items">Items</h2>
+        <div class="add-item-row">
+          <div class="autocomplete" style="flex:1;min-width:0" id="autocomplete-item">
+            <input type="text" id="itemInput" data-i18n-placeholder="searchItemPlaceholder" placeholder="Search item..." style="width:100%;padding:10px;border:1px solid #333;border-radius:8px;background:#1a1a2e;color:#e0e0e0;font-size:1em;box-sizing:border-box">
+            <div class="autocomplete-items" id="item-autocomplete-list"></div>
+          </div>
+          <input type="number" id="itemQty" value="1" min="1" style="width:60px;padding:10px;border:1px solid #333;border-radius:8px;background:#1a1a2e;color:#e0e0e0;text-align:center;font-size:1em">
+          <button class="btn btn-sm btn-success" onclick="addItem()" style="padding:10px 16px" data-i18n="add">Add</button>
+        </div>
+        <div class="items-section" id="itemsList"></div>
+      </div>
+
+      <div class="card">
+        <h2 data-i18n="levelCap" style="margin-bottom:8px">Level Cap</h2>
+        <div id="levelCapDisplay" style="font-size:3em;font-weight:700;color:#e94560;text-align:center;line-height:1;margin-bottom:20px">14</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px">
+          <button class="btn btn-sm gym-btn" data-cap="23" data-idx="0" onclick="setGymCap(this, 23)" style="background:#333;color:#e0e0e0;padding:6px 8px;font-size:0.78em;display:flex;flex-direction:column;align-items:center;line-height:1.3;height:auto;border:none;border-radius:6px;cursor:pointer;transition:background 0.15s">1st Gym<span style="font-size:0.7em;color:#888;font-weight:400">Lv 23</span></button>
+          <button class="btn btn-sm gym-btn" data-cap="30" data-idx="1" onclick="setGymCap(this, 30)" style="background:#333;color:#e0e0e0;padding:6px 8px;font-size:0.78em;display:flex;flex-direction:column;align-items:center;line-height:1.3;height:auto;border:none;border-radius:6px;cursor:pointer;transition:background 0.15s">2nd Gym<span style="font-size:0.7em;color:#888;font-weight:400">Lv 30</span></button>
+          <button class="btn btn-sm gym-btn" data-cap="39" data-idx="2" onclick="setGymCap(this, 39)" style="background:#333;color:#e0e0e0;padding:6px 8px;font-size:0.78em;display:flex;flex-direction:column;align-items:center;line-height:1.3;height:auto;border:none;border-radius:6px;cursor:pointer;transition:background 0.15s">3rd Gym<span style="font-size:0.7em;color:#888;font-weight:400">Lv 39</span></button>
+          <button class="btn btn-sm gym-btn" data-cap="49" data-idx="3" onclick="setGymCap(this, 49)" style="background:#333;color:#e0e0e0;padding:6px 8px;font-size:0.78em;display:flex;flex-direction:column;align-items:center;line-height:1.3;height:auto;border:none;border-radius:6px;cursor:pointer;transition:background 0.15s">4th Gym<span style="font-size:0.7em;color:#888;font-weight:400">Lv 49</span></button>
+          <button class="btn btn-sm gym-btn" data-cap="54" data-idx="4" onclick="setGymCap(this, 54)" style="background:#333;color:#e0e0e0;padding:6px 8px;font-size:0.78em;display:flex;flex-direction:column;align-items:center;line-height:1.3;height:auto;border:none;border-radius:6px;cursor:pointer;transition:background 0.15s">5th Gym<span style="font-size:0.7em;color:#888;font-weight:400">Lv 54</span></button>
+          <button class="btn btn-sm gym-btn" data-cap="59" data-idx="5" onclick="setGymCap(this, 59)" style="background:#333;color:#e0e0e0;padding:6px 8px;font-size:0.78em;display:flex;flex-direction:column;align-items:center;line-height:1.3;height:auto;border:none;border-radius:6px;cursor:pointer;transition:background 0.15s">6th Gym<span style="font-size:0.7em;color:#888;font-weight:400">Lv 59</span></button>
+          <button class="btn btn-sm gym-btn" data-cap="66" data-idx="6" onclick="setGymCap(this, 66)" style="background:#333;color:#e0e0e0;padding:6px 8px;font-size:0.78em;display:flex;flex-direction:column;align-items:center;line-height:1.3;height:auto;border:none;border-radius:6px;cursor:pointer;transition:background 0.15s">7th Gym<span style="font-size:0.7em;color:#888;font-weight:400">Lv 66</span></button>
+          <button class="btn btn-sm gym-btn" data-cap="75" data-idx="7" onclick="setGymCap(this, 75)" style="background:#333;color:#e0e0e0;padding:6px 8px;font-size:0.78em;display:flex;flex-direction:column;align-items:center;line-height:1.3;height:auto;border:none;border-radius:6px;cursor:pointer;transition:background 0.15s">8th Gym<span style="font-size:0.7em;color:#888;font-weight:400">Lv 75</span></button>
+        </div>
+      </div>
+    
+  </div>
+
+  <div class="card" style="margin-bottom:20px">
+    <div class="tabs">
+      <button class="tab active" data-tab="caught" data-i18n="tabCaught">My Pokemon</button>
+      <button class="tab" data-tab="team" data-i18n="tabTeam">Best Team</button>
+      <button class="tab" data-tab="evolutions" data-i18n="tabEvolutions">Evolutions</button>
+      <button class="tab" data-tab="compare" data-i18n="tabCompare">Compare</button>
+    </div>
+
+    <div class="tab-content active" id="tab-caught">
+      <div class="section-header">
+        <span id="caughtCount">0 Pokemon</span>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <input type="text" id="caughtSearch" data-i18n-placeholder="searchPlaceholder" placeholder="Search by name or nickname..." style="padding:8px 12px;border:1px solid #333;border-radius:8px;background:#1a1a2e;color:#e0e0e0;font-size:0.9em;width:170px" oninput="renderCaught()">
+          <select id="sortOrder" style="padding:8px 12px;border:1px solid #333;border-radius:8px;background:#1a1a2e;color:#e0e0e0;font-size:0.85em" onchange="renderCaught()">
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="name">Name A-Z</option>
+            <option value="name_desc">Name Z-A</option>
+          </select>
+          <select id="typeFilter" style="padding:8px 12px;border:1px solid #333;border-radius:8px;background:#1a1a2e;color:#e0e0e0;font-size:0.85em" onchange="renderCaught()">
+            <option value="">All Types</option>
+            <option value="Normal">Normal</option><option value="Fire">Fire</option><option value="Water">Water</option>
+            <option value="Electric">Electric</option><option value="Grass">Grass</option><option value="Ice">Ice</option>
+            <option value="Fighting">Fighting</option><option value="Poison">Poison</option><option value="Ground">Ground</option>
+            <option value="Flying">Flying</option><option value="Psychic">Psychic</option><option value="Bug">Bug</option>
+            <option value="Rock">Rock</option><option value="Ghost">Ghost</option><option value="Dragon">Dragon</option>
+            <option value="Dark">Dark</option><option value="Steel">Steel</option><option value="Fairy">Fairy</option>
+          </select>
+          <button class="btn btn-sm btn-primary" onclick="document.getElementById('statQuery').scrollIntoView();" data-i18n="queryByStatBtn">Query by Stat</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteAllCaught()" style="background:#533483">Delete All</button>
+        </div>
+      </div>
+      <div class="pokemon-list" id="caughtList"></div>
+      <div id="caughtPagination" style="display:flex;justify-content:center;gap:8px;margin-top:12px"></div>
+      <div class="card" style="margin-top:15px" id="statQuery">
+        <h2 data-i18n="queryByStatH">Query by Stat</h2>
+        <div style="display:flex;gap:10px;align-items:end;flex-wrap:wrap">
+          <div class="form-group" style="flex:1;margin-bottom:0;min-width:150px">
+            <label data-i18n="statLabel">Stat</label>
+            <select id="statSelect">
+              <option value="total">Total</option>
+              <option value="hp">HP</option>
+              <option value="attack">Attack</option>
+              <option value="defense">Defense</option>
+              <option value="sp_atk">Sp. Atk</option>
+              <option value="sp_def">Sp. Def</option>
+              <option value="speed">Speed</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" onclick="queryByStat()" data-i18n="showBest">Show Best</button>
+        </div>
+      </div>
+      <div class="team-grid" id="statResults" style="margin-top:10px"></div>
+    </div>
+
+    <div class="tab-content" id="tab-team">
+      <div class="section-header">
+        <span data-i18n="strongestTeam">Strongest team based on total stats</span>
+        <button class="btn btn-sm btn-primary" onclick="loadBestTeam()" data-i18n="refresh">Refresh</button>
+      </div>
+      <div class="team-grid" id="bestTeam"></div>
+    </div>
+
+    <div class="tab-content" id="tab-evolutions">
+      <div class="section-header">
+        <span id="evoCount">0 available evolutions</span>
+        <div>
+          <button class="btn btn-sm btn-success" onclick="loadEvolutions()" data-i18n="checkAgain">Check Again</button>
+          <button class="btn btn-sm btn-danger" onclick="evolveAll()" data-i18n="evolveAll">Evolve All (Level)</button>
+        </div>
+      </div>
+      <div id="evoList"></div>
+    </div>
+
+    <div class="tab-content" id="tab-compare">
+      <h2 style="font-size:1.2em;margin-bottom:12px;color:#e94560;border:none" data-i18n="compareTitle">Compare Pokemon</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:12px">
+        <div class="autocomplete" id="autocomplete-compare1">
+          <input type="text" id="compareName1" data-i18n-placeholder="compareP1" placeholder="Pokemon 1..." style="width:100%;padding:10px;border:1px solid #333;border-radius:8px;background:#1a1a2e;color:#e0e0e0;font-size:1em;box-sizing:border-box">
+          <div class="autocomplete-items" id="compare-autocomplete-list1"></div>
+        </div>
+        <div class="autocomplete" id="autocomplete-compare2">
+          <input type="text" id="compareName2" data-i18n-placeholder="compareP2" placeholder="Pokemon 2..." style="width:100%;padding:10px;border:1px solid #333;border-radius:8px;background:#1a1a2e;color:#e0e0e0;font-size:1em;box-sizing:border-box">
+          <div class="autocomplete-items" id="compare-autocomplete-list2"></div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="comparePokemon()" data-i18n="compareBtn">Compare</button>
+      <div id="compareResults" style="margin-top:20px"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+let allPokemon = {};
+let caughtData = [];
+let itemsData = [];
+let caughtPage = 1;
+const PAGE_SIZE = 10;
+let currentLang = 'en';
+const LANG = {
+  en: {
+    title: 'Pok\u00e9mon Team Optimizer', addPokemon: 'Add Pokemon', pokeNameLabel: 'Pokemon Name',
+    pokeNamePlaceholder: 'Type pokemon name...', nickLabel: 'Nickname (optional)', nickPlaceholder: 'Nickname',
+    addToTeam: 'Add to Team', levelCap: 'Level Cap', apply: 'Apply', items: 'Items',
+    searchItemPlaceholder: 'Search item...', add: 'Add', tabCaught: 'My Pokemon', tabTeam: 'Best Team',
+    tabEvolutions: 'Evolutions', searchPlaceholder: 'Search by name or nickname...',
+    queryByStatBtn: 'Query by Stat', queryByStatH: 'Query by Stat', statLabel: 'Stat', showBest: 'Show Best',
+    strongestTeam: 'Strongest team based on total stats', refresh: 'Refresh', checkAgain: 'Check Again',
+    evolveAll: 'Evolve All (Level)', newGame: 'New Game', del: 'Delete',
+    pokemon: 'Pokemon', filtered: '(filtered)', noMatch: 'No Pokemon match your search.',
+    noCaught: 'No Pokemon caught yet. Start adding!',     prev: '\u00ab Prev', next: 'Next \u00bb', first: 'First', last: 'Last',
+    page: 'Page', totalStats: '',     availEvo: 'available evolutions', availEvo_s: 'available evolution',
+    noEvo: 'No evolutions available right now. Increase the level cap or add evolution items.',
+    delConfirm: 'Delete {0}?', deleted: '{0} deleted',
+    ngConfirm1: 'Start a new game? This will delete ALL Pokemon and items. Are you sure?',
+    ngConfirm2: 'Really? All data will be lost forever!',
+    ngStarted: 'New game started!', noPokeYet: 'No Pokemon caught yet.',
+    lvlCapSet: 'Level cap set to {0}', noLvlEvo: 'No level-based evolutions available.',
+    evoFail: 'Evolution failed',
+    evoConfirm: 'Evolve {0} into {1}?', evoConfirmItem: 'Evolve {0} into {1} using {2}?',
+    evolved: '{0} evolved into {1}!', addedPoke: '{0} added!',
+    pleaseName: 'Please enter a pokemon name', addedItem: 'Added {0} x{1}',
+    evoBtn: 'Evolve',     errorAdd: 'Error adding pokemon', evolvedCount: 'Evolved {0} Pokemon!',
+    evoAllConfirm: 'Evolve ALL Pokemon that can evolve by level (based on current level cap)?',
+    chooseForm: 'Choose a form:',
+    tabCompare: 'Compare',
+    compareTitle: 'Compare Pokemon',
+    compareP1: 'Pokemon 1...',
+    compareP2: 'Pokemon 2...',
+    compareBtn: 'Compare',
+    compareBothReq: 'Enter both Pokemon names',
+    compareNotFound: 'Pokemon not found',
+    compareStats: 'Stats',
+    compareTotal: 'Total:',
+    compareMatchups: '{0} Matchups',
+    effImmune: 'Immune',
+    effResists4: 'Resists (x\u00BC)',
+    effResists2: 'Resists (x\u00BD)',
+    effNeutral: 'Neutral (x1)',
+    effWeak2: 'Weak (x2)',
+    effWeak4: 'Weak (x4)',
+  },
+  es: {
+    title: 'Optimizador de Equipo Pok\u00e9mon', addPokemon: 'Agregar Pok\u00e9mon', pokeNameLabel: 'Nombre del Pok\u00e9mon',
+    pokeNamePlaceholder: 'Escribe el nombre...', nickLabel: 'Apodo (opcional)', nickPlaceholder: 'Apodo',
+    addToTeam: 'Agregar al Equipo', levelCap: 'L\u00edmite de Nivel', apply: 'Aplicar', items: 'Objetos',
+    searchItemPlaceholder: 'Buscar objeto...', add: 'Agregar', tabCaught: 'Mis Pok\u00e9mon', tabTeam: 'Mejor Equipo',
+    tabEvolutions: 'Evoluciones', searchPlaceholder: 'Buscar por nombre o apodo...',
+    queryByStatBtn: 'Consultar por Estad\u00edstica', queryByStatH: 'Consultar por Estad\u00edstica',
+    statLabel: 'Estad\u00edstica', showBest: 'Mostrar Mejores',
+    strongestTeam: 'Equipo m\u00e1s fuerte seg\u00fan estad\u00edsticas totales', refresh: 'Actualizar',
+    checkAgain: 'Verificar Otra Vez', evolveAll: 'Evolucionar Todos (Nivel)', newGame: 'Nueva Partida', del: 'Eliminar',
+    pokemon: 'Pok\u00e9mon', filtered: '(filtrados)', noMatch: 'Ning\u00fan Pok\u00e9mon coincide con tu b\u00fasqueda.',
+    noCaught: 'A\u00fan no has atrapado Pok\u00e9mon. \u00a1Empieza a agregar!',     prev: '\u00ab Anterior',
+    next: 'Siguiente \u00bb', first: 'Primera', last: '\u00daltima',
+    page: 'P\u00e1gina', totalStats: '',
+    availEvo: 'evoluciones disponibles', availEvo_s: 'evoluci\u00f3n disponible',
+    noEvo: 'No hay evoluciones disponibles ahora. Aumenta el l\u00edmite de nivel o agrega objetos de evoluci\u00f3n.',
+    delConfirm: '\u00bfEliminar a {0}?', deleted: '{0} eliminado',
+    ngConfirm1: '\u00bfEmpezar una nueva partida? \u00a1Esto eliminar\u00e1 TODOS los Pok\u00e9mon y objetos!',
+    ngConfirm2: '\u00bfDe verdad? \u00a1Todos los datos se perder\u00e1n para siempre!',
+    ngStarted: '\u00a1Nueva partida iniciada!', noPokeYet: 'A\u00fan no has atrapado Pok\u00e9mon.',
+    lvlCapSet: 'L\u00edmite de nivel establecido en {0}',
+    noLvlEvo: 'No hay evoluciones por nivel disponibles.',
+    evoBtn: 'Evolucionar', evoFail: 'Evoluci\u00f3n fallida',
+    chooseForm: 'Elige una forma:',
+    evoConfirm: '\u00bfEvolucionar a {0} en {1}?',
+    evoConfirmItem: '\u00bfEvolucionar a {0} en {1} usando {2}?',
+    evolved: '\u00a1{0} evolucion\u00f3 a {1}!', addedPoke: '\u00a1{0} agregado!',
+    pleaseName: 'Por favor ingresa un nombre de Pok\u00e9mon', addedItem: 'Agregado {0} x{1}',
+    errorAdd: 'Error al agregar Pok\u00e9mon', evolvedCount: '\u00a1Evolucionaron {0} Pok\u00e9mon!',
+    evoAllConfirm: '\u00bfEvolucionar TODOS los Pok\u00e9mon que puedan evolucionar por nivel (seg\u00fan el l\u00edmite actual)?',
+    tabCompare: 'Comparar',
+    compareTitle: 'Comparar Pok\u00e9mon',
+    compareP1: 'Pok\u00e9mon 1...',
+    compareP2: 'Pok\u00e9mon 2...',
+    compareBtn: 'Comparar',
+    compareBothReq: 'Ingresa ambos nombres de Pok\u00e9mon',
+    compareNotFound: 'Pok\u00e9mon no encontrado',
+    compareStats: 'Estad\u00edsticas',
+    compareTotal: 'Total:',
+    compareMatchups: '{0} Efectividad',
+    effImmune: 'Inmune',
+    effResists4: 'Resiste (x\u00BC)',
+    effResists2: 'Resiste (x\u00BD)',
+    effNeutral: 'Neutral (x1)',
+    effWeak2: 'D\u00e9bil (x2)',
+    effWeak4: 'D\u00e9bil (x4)',
+  }
+};
+function t(key, ...args) {
+  let str = LANG[currentLang][key];
+  if (str === undefined) str = LANG.en[key] || key;
+  args.forEach((arg, i) => { str = str.replace(new RegExp('\\{' + i + '\\}', 'g'), arg); });
+  return str;
+}
+function toggleLang() {
+  currentLang = currentLang === 'en' ? 'es' : 'en';
+  document.getElementById('langToggle').textContent = currentLang.toUpperCase();
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { el.placeholder = t(el.dataset.i18nPlaceholder); });
+  document.title = t('title');
+  renderCaught();
+  loadBestTeam();
+  queryByStat();
+  loadEvolutions();
+}
+
+function _norm(s) { return s.toLowerCase().trim().replace(/-/g, '').replace(/'/g, '').replace(/\./g, '').replace(/ /g, ''); }
+function getNameKey(name) {
+  const nn = _norm(name);
+  for (const k in POKEMON_DATA) { if (_norm(k) === nn) return k; }
+  for (const k in POKEMON_DATA) { if (_norm(POKEMON_DATA[k].name) === nn) return k; }
+  return null;
+}
+function buildSpriteName(name, form) {
+  let base = name.toLowerCase().replace(/ /g,'-').replace(/\./g,'').replace(/\u2640/g,'-f').replace(/\u2642/g,'-m');
+  const f = (form||'').trim();
+  if (!f||f===' ') return base;
+  const fl = f.toLowerCase();
+  if (fl.startsWith('alolan ')) return base+'-alola';
+  if (fl.startsWith('galarian ')) return base+'-galar';
+  if (fl.startsWith('hisuian ')) return base+'-hisui';
+  return base;
+}
+function isRegionalForm(form) {
+  const f = (form||'').trim().toLowerCase();
+  return f.startsWith('alolan ')||f.startsWith('galarian ')||f.startsWith('hisuian ');
+}
+function findPokemonByBaseName(baseName) {
+  const bn = _norm(baseName);
+  for (const k in POKEMON_DATA) {
+    const d = POKEMON_DATA[k];
+    if (_norm(d.name)===bn && (!d.form||d.form===' ')) return k;
+  }
+  for (const k in POKEMON_DATA) {
+    if (_norm(POKEMON_DATA[k].name)===bn) return k;
+  }
+  return null;
+}
+function getHighlights(stats) {
+  if (!stats) return [];
+  const h = [];
+  for (const [sn, col] of [['HP','hp'],['Attack','attack'],['Defense','defense'],['Sp. Atk','sp_atk'],['Sp. Def','sp_def'],['Speed','speed'],['Total','total']]) {
+    const val = stats[col];
+    if (Object.values(POKEMON_DATA).every(p => val >= p[col])) h.push('Highest '+sn+' of all Pokemon!');
+  }
+  return h;
+}
+function hasRegionalForms(name) {
+  for (const k in POKEMON_DATA) {
+    if (POKEMON_DATA[k].name===name && isRegionalForm(POKEMON_DATA[k].form)) return true;
+  }
+  return false;
+}
+
+function init() {
+  loadAllPokemon();
+  loadCaught();
+  loadLevelCap();
+  loadItems();
+  loadEvolutions();
+  loadBestTeam();
+  setupPokeAutocomplete();
+  setupItemAutocomplete();
+  setupCompareAutocomplete('compareName1', 'compare-autocomplete-list1');
+  setupCompareAutocomplete('compareName2', 'compare-autocomplete-list2');
+  setupTabs();
+}
+
+function loadAllPokemon() {
+  for (const k in POKEMON_DATA) allPokemon[k] = POKEMON_DATA[k];
+}
+
+function loadCaught() {
+  try { const d = localStorage.getItem('pk_caught'); caughtData = d ? JSON.parse(d) : []; } catch(e) { caughtData = []; }
+  for (const c of caughtData) {
+    const key = c.name + (c.form && c.form.trim() ? '|' + c.form : '');
+    c.stats = POKEMON_DATA[key] || POKEMON_DATA[c.name] || {};
+  }
+  caughtPage = 1;
+  renderCaught();
+  saveStateToCache();
+}
+
+function addCaught() {
+  const name = document.getElementById('pokeName').value.trim();
+  const nick = document.getElementById('pokeNick').value.trim() || name;
+  if (!name) { showNotification(t('pleaseName')); return; }
+  const forms = [];
+  for (const k in POKEMON_DATA) {
+    const p = POKEMON_DATA[k];
+    if (p.name.toLowerCase() === name.toLowerCase()) forms.push({...p, sprite_name: buildSpriteName(p.name, p.form), regional: isRegionalForm(p.form)});
+  }
+  if (forms.length > 1 && forms.some(f => f.regional)) { showFormPicker(forms, nick); return; }
+  doAddCaught(name, '', nick);
+}
+
+function doAddCaught(name, form, nick) {
+  let key = getNameKey(name);
+  if (form) {
+    for (const k in POKEMON_DATA) {
+      if (POKEMON_DATA[k].name.toLowerCase()===name.toLowerCase() && POKEMON_DATA[k].form.toLowerCase()===form.toLowerCase()) { key = k; break; }
+    }
+  }
+  if (!key || !POKEMON_DATA[key]) { showNotification(t('errorAdd')); return; }
+  const p = POKEMON_DATA[key];
+  const idx = caughtData.findIndex(c => c.name.toLowerCase()===p.name.toLowerCase());
+  const entry = {name: p.name, form: p.form, nickname: nick, level: 1, stats: p};
+  if (idx>=0) caughtData[idx] = entry;
+  else caughtData.push(entry);
+  saveStateToCache();
+  showNotification(t('addedPoke', name));
+  document.getElementById('pokeName').value = '';
+  document.getElementById('pokeNick').value = '';
+  const highlights = getHighlights(p);
+  const noteDiv = document.getElementById('addNotification');
+  noteDiv.innerHTML = '';
+  for (const h of highlights) { const b = document.createElement('span'); b.className = 'highlight'; b.textContent = h; noteDiv.appendChild(b); }
+  renderCaught();
+  loadEvolutions();
+  loadBestTeam();
+}
+
+function deleteCaught(name) {
+  if (!confirm(t('delConfirm', name))) return;
+  caughtData = caughtData.filter(c => c.name.toLowerCase() !== name.toLowerCase());
+  saveStateToCache();
+  showNotification(t('deleted', name));
+  renderCaught();
+  loadEvolutions();
+  loadBestTeam();
+}
+
+function deleteAllCaught() {
+  if (!confirm('Delete ALL Pokemon? This cannot be undone.')) return;
+  caughtData = [];
+  saveStateToCache();
+  showNotification('All Pokemon deleted');
+  renderCaught();
+  loadEvolutions();
+  loadBestTeam();
+}
+
+const spriteCache = {};
+async function loadSprite(imgEl) {
+  const name = imgEl.dataset.sprite;
+  const form = imgEl.dataset.form || '';
+  const key = name + '|' + form;
+  if (spriteCache[key]) { imgEl.src = spriteCache[key]; imgEl.style.display = 'block'; return; }
+  try {
+    const apiName = buildSpriteName(name, form);
+    const resp = await fetch('https://pokeapi.co/api/v2/pokemon/' + apiName);
+    if (resp.ok) {
+      const data = await resp.json();
+      const sprite = data.sprites.front_default;
+      if (sprite) { spriteCache[key] = sprite; imgEl.src = sprite; imgEl.style.display = 'block'; return; }
+    }
+  } catch(e) {}
+  imgEl.style.display = 'none';
+}
+
+function setupPokeAutocomplete() {
+  const input = document.getElementById('pokeName');
+  const list = document.getElementById('autocomplete-list');
+  input.addEventListener('input', function() {
+    const val = this.value.trim();
+    list.innerHTML = '';
+    if (val.length < 1) return;
+    const q = val.toLowerCase();
+    const seen = new Set();
+    const results = [];
+    for (const k in POKEMON_DATA) {
+      const p = POKEMON_DATA[k];
+      if (!seen.has(p.name) && p.name.toLowerCase().includes(q)) { seen.add(p.name); results.push(p); }
+    }
+    results.sort((a,b) => b.total - a.total);
+    for (const p of results.slice(0, 20)) {
+      const div = document.createElement('div');
+      div.className = 'autocomplete-item';
+      const status = caughtData.some(c => c.name.toLowerCase() === p.name.toLowerCase()) ? ' [HAVE]' : '';
+      const formIndicator = hasRegionalForms(p.name) ? ' <span style="color:#e94560;font-size:0.75em;font-weight:700">[Forms]</span>' : '';
+      div.innerHTML = `<span>${p.name}${status}${formIndicator}</span><span class="info">Total: ${p.total}</span>`;
+      div.addEventListener('click', function() {
+        input.value = p.name;
+        list.innerHTML = '';
+      });
+      list.appendChild(div);
+    }
+  });
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.autocomplete') || e.target.closest('#autocomplete-item')) return;
+    list.innerHTML = '';
+  });
+}
+
+function setupItemAutocomplete() {
+  const input = document.getElementById('itemInput');
+  const list = document.getElementById('item-autocomplete-list');
+  input.addEventListener('input', function() {
+    const val = this.value.trim();
+    list.innerHTML = '';
+    if (val.length < 1) return;
+    const q = val.toLowerCase();
+    const items = Object.entries(ITEM_CATALOG).filter(([code, name]) => name.toLowerCase().includes(q) || code.toLowerCase().includes(q));
+    for (const [code, name] of items.slice(0, 20)) {
+      const div = document.createElement('div');
+      div.className = 'autocomplete-item';
+      div.innerHTML = `<span>${name} (${code})</span><span class="info">${code}</span>`;
+      div.addEventListener('click', function() {
+        input.value = code;
+        list.innerHTML = '';
+      });
+      list.appendChild(div);
+    }
+  });
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('#autocomplete-item')) {
+      list.innerHTML = '';
+    }
+  });
+}
+
+function setupCompareAutocomplete(inputId, listId) {
+  const input = document.getElementById(inputId);
+  const list = document.getElementById(listId);
+  input.addEventListener('input', function() {
+    const val = this.value.trim();
+    list.innerHTML = '';
+    if (val.length < 1) return;
+    const q = val.toLowerCase();
+    const seen = new Set();
+    const results = [];
+    for (const k in POKEMON_DATA) {
+      const p = POKEMON_DATA[k];
+      if (!seen.has(p.name) && p.name.toLowerCase().includes(q)) { seen.add(p.name); results.push(p); }
+    }
+    results.sort((a,b) => b.total - a.total);
+    for (const p of results.slice(0, 20)) {
+      const div = document.createElement('div');
+      div.className = 'autocomplete-item';
+      const formIndicator = hasRegionalForms(p.name) ? ' <span style="color:#e94560;font-size:0.75em;font-weight:700">[Forms]</span>' : '';
+      div.innerHTML = `<span>${p.name}${formIndicator}</span><span class="info">Total: ${p.total}</span>`;
+      div.addEventListener('click', function() {
+        input.value = p.name;
+        list.innerHTML = '';
+      });
+      list.appendChild(div);
+    }
+  });
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.autocomplete') || e.target.closest('#autocomplete-compare1') || e.target.closest('#autocomplete-compare2')) return;
+    list.innerHTML = '';
+  });
+}
+
+function setupTabs() {
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      document.getElementById('tab-' + this.dataset.tab).classList.add('active');
+    });
+  });
+}
+
+function getTypeBadge(type) {
+  if (!type || type.trim() === '') return '';
+  return `<span class="badge ${type.toLowerCase().trim()}">${type}</span>`;
+}
+
+function showNotification(msg) {
+  const div = document.createElement('div');
+  div.className = 'notification';
+  div.textContent = msg;
+  document.body.appendChild(div);
+  setTimeout(() => div.remove(), 5000);
+}
+
+let _pendingNick = '';
+
+function showFormPicker(forms, nick) {
+  _pendingNick = nick;
+  const modal = document.getElementById('formModal');
+  document.getElementById('formPokeTitle').textContent = forms[0].name + ' - ' + t('chooseForm');
+  const options = document.getElementById('formOptions');
+  options.innerHTML = '';
+
+  for (const f of forms) {
+    const div = document.createElement('div');
+    div.className = 'form-option';
+    const displayName = f.form && f.form.trim() ? f.form : f.name;
+    div.innerHTML = `
+      <img src="" alt="${displayName.replace(/"/g, '&quot;')}" data-sprite="${f.name}" data-form="${f.form||''}">
+      <div class="form-name">${displayName}</div>
+      <div class="form-type">${getTypeBadge(f.type1)} ${getTypeBadge(f.type2)}</div>`;
+    div.onclick = () => {
+      modal.style.display = 'none';
+      doAddCaught(f.name, f.form || '', _pendingNick);
+    };
+    options.appendChild(div);
+  }
+
+  modal.style.display = 'flex';
+  options.querySelectorAll('img[data-sprite]').forEach(img => loadSprite(img));
+}
+
+function closeFormPicker() {
+  document.getElementById('formModal').style.display = 'none';
+}
+
+function renderCaught() {
+  const query = document.getElementById('caughtSearch').value.toLowerCase().trim();
+  const typeFilter = document.getElementById('typeFilter').value;
+  const sort = document.getElementById('sortOrder').value;
+  let filtered = caughtData;
+  if (query) {
+    filtered = filtered.filter(c =>
+      c.name.toLowerCase().includes(query) ||
+      (c.nickname && c.nickname.toLowerCase().includes(query))
+    );
+  }
+  if (typeFilter) {
+    filtered = filtered.filter(c => {
+      const poke = c.stats || {};
+      return poke.type1 === typeFilter || poke.type2 === typeFilter;
+    });
+  }
+  if (sort === 'oldest') {
+    filtered = filtered.slice().reverse();
+  } else if (sort === 'name') {
+    filtered = filtered.slice().sort((a, b) => a.name.localeCompare(b.name));
+  } else if (sort === 'name_desc') {
+    filtered = filtered.slice().sort((a, b) => b.name.localeCompare(a.name));
+  }
+
+  const list = document.getElementById('caughtList');
+  const pagination = document.getElementById('caughtPagination');
+  list.innerHTML = '';
+  pagination.innerHTML = '';
+  document.getElementById('caughtCount').textContent = filtered.length + ' ' + t('pokemon') + ((query || typeFilter) ? ' ' + t('filtered') : '');
+
+  if (filtered.length === 0) {
+    list.innerHTML = '<div class="empty-state">' + ((query || typeFilter) ? t('noMatch') : t('noCaught')) + '</div>';
+    return;
+  }
+
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  if (caughtPage > totalPages) caughtPage = totalPages;
+  const start = (caughtPage - 1) * PAGE_SIZE;
+  const pageItems = filtered.slice(start, start + PAGE_SIZE);
+
+  for (const c of pageItems) {
+    const poke = c.stats || {};
+    const item = document.createElement('div');
+    item.className = 'pokemon-item';
+    const formForSprite = c.form && c.form.trim() ? c.form : '';
+    const spriteName = c.name;
+    item.innerHTML = `
+      <img class="sprite" src="" alt="${c.name}" data-sprite="${spriteName}" data-form="${formForSprite}">
+      <div class="info">
+        <div>
+          <span class="name">${c.nickname !== c.name ? c.nickname + ' (' + c.name + ')' : c.name}</span>
+        </div>
+        <div class="types">${getTypeBadge(poke.type1)} ${getTypeBadge(poke.type2)}</div>
+        <div class="stats-bar">
+          <span class="stat-tag total">T:${poke.total || '?'}</span>
+          <span class="stat-tag hp">HP:${poke.hp || '?'}</span>
+          <span class="stat-tag attack">ATK:${poke.attack || '?'}</span>
+          <span class="stat-tag defense">DEF:${poke.defense || '?'}</span>
+          <span class="stat-tag sp_atk">SPA:${poke.sp_atk || '?'}</span>
+          <span class="stat-tag sp_def">SPD:${poke.sp_def || '?'}</span>
+          <span class="stat-tag speed">SPE:${poke.speed || '?'}</span>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-sm btn-danger" onclick="deleteCaught('${c.name.replace(/'/g, "\\'")}')">${t('del')}</button>
+      </div>`;
+    list.appendChild(item);
+    loadSprite(item.querySelector('.sprite'));
+  }
+
+  if (totalPages > 1) {
+    if (caughtPage > 1) {
+      const first = document.createElement('button');
+      first.className = 'btn btn-sm btn-primary';
+      first.textContent = t('first');
+      first.onclick = () => { caughtPage = 1; renderCaught(); };
+      pagination.appendChild(first);
+      const prev = document.createElement('button');
+      prev.className = 'btn btn-sm btn-primary';
+      prev.textContent = t('prev');
+      prev.onclick = () => { caughtPage--; renderCaught(); };
+      pagination.appendChild(prev);
+    }
+    const span = document.createElement('span');
+    span.style.cssText = 'padding:6px 12px;color:#aaa';
+    span.textContent = t('page') + ' ' + caughtPage + ' / ' + totalPages;
+    pagination.appendChild(span);
+    if (caughtPage < totalPages) {
+      const next = document.createElement('button');
+      next.className = 'btn btn-sm btn-primary';
+      next.textContent = t('next');
+      next.onclick = () => { caughtPage++; renderCaught(); };
+      pagination.appendChild(next);
+      const last = document.createElement('button');
+      last.className = 'btn btn-sm btn-primary';
+      last.textContent = t('last');
+      last.onclick = () => { caughtPage = totalPages; renderCaught(); };
+      pagination.appendChild(last);
+    }
+  }
+}
+
+function saveStateToCache() {
+  try {
+    localStorage.setItem('pk_caught', JSON.stringify(caughtData.map(c => ({name: c.name, form: c.form||'', nickname: c.nickname||c.name, level: c.level||1}))));
+    localStorage.setItem('pk_items', JSON.stringify(itemsData));
+    const cap = parseInt(document.getElementById('levelCapDisplay').textContent) || 14;
+    localStorage.setItem('pk_level_cap', String(cap));
+  } catch(e) {}
+}
+
+function renderItems() {
+  const div = document.getElementById('itemsList');
+  div.innerHTML = '';
+  for (const item of itemsData) {
+    const pill = document.createElement('span');
+    pill.className = 'item-pill';
+    const stockInfo = item.stock > 1 ? ` <span class="stock">x${item.stock}</span>` : '';
+    pill.innerHTML = `${item.name}${stockInfo} <span class="remove" onclick="removeItem('${item.name}')">&times;</span>`;
+    div.appendChild(pill);
+  }
+}
+
+function loadItems() {
+  try { const d = localStorage.getItem('pk_items'); itemsData = d ? JSON.parse(d) : []; } catch(e) { itemsData = []; }
+  renderItems();
+}
+
+function addItem() {
+  const input = document.getElementById('itemInput');
+  const qty = parseInt(document.getElementById('itemQty').value) || 1;
+  const item = input.value.trim().toUpperCase();
+  if (!item) return;
+  input.value = '';
+  document.getElementById('itemQty').value = '1';
+  const existing = itemsData.find(i => i.name === item);
+  if (existing) existing.stock += qty;
+  else itemsData.push({name: item, stock: qty});
+  saveStateToCache();
+  renderItems();
+  showNotification(t('addedItem', item, qty));
+  loadEvolutions();
+}
+
+function removeItem(item) {
+  itemsData = itemsData.filter(i => i.name !== item);
+  saveStateToCache();
+  renderItems();
+  loadEvolutions();
+}
+
+let gymMaxIdx = -1;
+
+function setGymCap(el, val) {
+  const idx = parseInt(el.dataset.idx);
+  const gymCaps = [23,30,39,49,54,59,66,75];
+  let newMax = idx;
+  if (idx === gymMaxIdx) {
+    newMax = idx - 1;
+  }
+  gymMaxIdx = newMax;
+  const newCap = newMax >= 0 ? gymCaps[newMax] : 14;
+  document.querySelectorAll('.gym-btn').forEach(b => {
+    b.classList.toggle('gym-active', parseInt(b.dataset.idx) <= newMax);
+  });
+  document.getElementById('levelCapDisplay').textContent = newCap;
+  try { localStorage.setItem('pk_level_cap', String(newCap)); } catch(e) {}
+  saveStateToCache();
+  showNotification(t('lvlCapSet', newCap));
+  loadEvolutions();
+}
+
+function loadLevelCap() {
+  let cap = 14;
+  try { const d = localStorage.getItem('pk_level_cap'); if (d) cap = parseInt(d); } catch(e) {}
+  document.getElementById('levelCapDisplay').textContent = cap;
+  const gymCaps = [23,30,39,49,54,59,66,75];
+  gymMaxIdx = -1;
+  for (let i = gymCaps.length - 1; i >= 0; i--) {
+    if (cap >= gymCaps[i]) { gymMaxIdx = i; break; }
+  }
+  document.querySelectorAll('.gym-btn').forEach(b => {
+    b.classList.toggle('gym-active', parseInt(b.dataset.idx) <= gymMaxIdx);
+  });
+}
+
+function loadBestTeam() {
+  const enriched = caughtData.map(c => ({...c, stats: c.stats || {}, total: (c.stats||{}).total || 0})).sort((a,b) => b.total - a.total).slice(0,6);
+  const div = document.getElementById('bestTeam');
+  div.innerHTML = '';
+  if (enriched.length === 0) { div.innerHTML = '<div class="empty-state">' + t('noPokeYet') + '</div>'; return; }
+  for (const c of enriched) {
+    const member = document.createElement('div');
+    member.className = 'team-member';
+    const form = c.form && c.form.trim() ? c.form : '';
+    member.innerHTML = `<img src="" alt="${c.name}" data-sprite="${c.name}" data-form="${form}"><div class="name">${c.name}</div><div class="value">${c.total}</div><div style="font-size:0.85em;color:#aaa">${t('totalStats')}</div>`;
+    div.appendChild(member);
+    loadSprite(member.querySelector('img'));
+  }
+}
+
+function queryByStat() {
+  const stat = document.getElementById('statSelect').value;
+  const col = stat;
+  const enriched = caughtData.map(c => ({...c, stats: c.stats || {}, value: (c.stats||{})[col] || 0})).sort((a,b) => b.value - a.value);
+  const div = document.getElementById('statResults');
+  div.innerHTML = '';
+  if (enriched.length === 0) { div.innerHTML = '<div class="empty-state">' + t('noPokeYet') + '</div>'; return; }
+  const statNames = {hp:'HP', attack:'Attack', defense:'Defense', sp_atk:'Sp. Atk', sp_def:'Sp. Def', speed:'Speed', total:'Total'};
+  for (const c of enriched) {
+    const member = document.createElement('div');
+    member.className = 'team-member';
+    const form = c.form && c.form.trim() ? c.form : '';
+    const total = c.stats ? c.stats.total : '?';
+    member.innerHTML = `<img src="" alt="${c.name}" data-sprite="${c.name}" data-form="${form}"><div class="info"><div class="name">${c.name}</div><div class="value">${c.value}</div><div class="sub">${statNames[stat]||stat} &middot; Total: ${total}</div></div>`;
+    div.appendChild(member);
+    loadSprite(member.querySelector('img'));
+  }
+}
+
+function loadEvolutions() {
+  const levelCap = parseInt(localStorage.getItem('pk_level_cap')) || 14;
+  const ownedItems = itemsData.map(i => i.name);
+  const available = [];
+  const seenTargets = new Set();
+  for (const c of caughtData) {
+    const nameLower = c.name.toLowerCase();
+    const form = (c.form||'').trim();
+    const formKey = form.toLowerCase();
+    const key1 = nameLower + '|' + formKey;
+    const key2 = nameLower + '|';
+    const allEvos = (EVOLUTION_MAP[key1] || []).concat(EVOLUTION_MAP[key2] || []);
+    for (const evo of allEvos) {
+      const evoNameRaw = evo.evolucion;
+      const evoSrcForm = (evo.form||'').trim();
+      let targetForm = '';
+      let evoKey = null;
+      if (evoSrcForm) {
+        targetForm = (evo.forma_evolucion||'').trim();
+        if (!targetForm) {
+          const prefix = evoSrcForm.split(' ')[0];
+          targetForm = prefix + ' ' + evoNameRaw.charAt(0).toUpperCase() + evoNameRaw.slice(1).toLowerCase();
+        }
+        for (const k in POKEMON_DATA) {
+          const v = POKEMON_DATA[k];
+          if (v.name.toLowerCase() === evoNameRaw.toLowerCase() && (v.form||'').trim().toLowerCase() === targetForm.toLowerCase()) { evoKey = k; break; }
+        }
+      }
+      if (!evoKey) evoKey = findPokemonByBaseName(evoNameRaw);
+      if (!evoKey || !POKEMON_DATA[evoKey]) continue;
+      const targetKey = evoNameRaw.toLowerCase() + '|' + (targetForm ? targetForm.toLowerCase() : '');
+      if (seenTargets.has(targetKey)) continue;
+      seenTargets.add(targetKey);
+      const evoStats = POKEMON_DATA[evoKey];
+      const method = (evo.metodo||'').trim();
+      const valor = (evo.valor||'').trim();
+      let canEvolve = false;
+      let reason = '';
+      if (method === 'Level') {
+        try { const req = parseInt(valor); if (levelCap >= req) canEvolve = true; else reason = 'Requires level ' + req + ' (cap: ' + levelCap + ')'; } catch(e) {}
+      } else if (method === 'Item') {
+        if (ownedItems.includes(valor.toUpperCase())) canEvolve = true;
+        else reason = 'Needs ' + valor;
+      } else if (method === 'TradeItem' || method === 'DayHoldItem') {
+        if (ownedItems.includes(valor.toUpperCase())) canEvolve = true;
+        else reason = 'Needs ' + valor;
+      } else if (method === 'Happiness' || method === 'HappinessDay' || method === 'HappinessNight' || method === 'Trade' || method === 'TradeSpecies') {
+        canEvolve = true;
+      } else if (method === 'LevelFemale' || method === 'LevelMale') {
+        try { const req = parseInt(valor); if (levelCap >= req) canEvolve = true; else reason = 'Requires level ' + req + ' (cap: ' + levelCap + ')'; } catch(e) {}
+      } else if (method === 'Ninjask' || method === 'Shedinja') {
+        if (levelCap >= 20) canEvolve = true;
+        else reason = 'Requires level 20';
+      } else if (method === 'Silcoon' || method === 'Cascoon') {
+        if (levelCap >= 7) canEvolve = true;
+        else reason = 'Requires level 7';
+      } else if (method === 'AttackGreater' || method === 'DefenseGreater' || method === 'AtkDefEqual') {
+        canEvolve = true;
+      } else {
+        canEvolve = true;
+      }
+      const evoItem = (method === 'Item' || method === 'TradeItem' || method === 'DayHoldItem') ? valor : null;
+      available.push({
+        from: c.name,
+        from_form: c.form||'',
+        to: evoStats.name,
+        to_form: targetForm || evoStats.form||'',
+        method: method,
+        item: evoItem,
+        can_evolve: canEvolve,
+        reason: reason,
+      });
+    }
+  }
+  const div = document.getElementById('evoList');
+  div.innerHTML = '';
+  document.getElementById('evoCount').textContent = available.length + ' ' + (available.length === 1 ? t('availEvo_s') : t('availEvo'));
+  if (available.length === 0) {
+    div.innerHTML = '<div class="empty-state">' + t('noEvo') + '</div>';
+    return;
+  }
+  for (const evo of available) {
+    const el = document.createElement('div');
+    el.className = 'evo-item';
+    const methodClass = evo.method.toLowerCase().includes('item') ? 'item' : evo.method.toLowerCase().includes('level') ? 'level' : 'happiness';
+    const fromForm = evo.from_form || '';
+    const canEvolve = evo.can_evolve;
+    const btnHtml = canEvolve
+      ? `<button class="btn btn-sm btn-success" onclick="evolve('${evo.from.replace(/'/g, "\\'")}', '${evo.to.replace(/'/g, "\\'")}', '${(fromForm || '').replace(/'/g, "\\'")}', '${(evo.item || '').replace(/'/g, "\\'")}')" style="margin-left:auto">${t('evoBtn')}</button>`
+      : `<span style="margin-left:auto;color:#e94560;font-size:0.85em;font-weight:600">${evo.reason}</span>`;
+    el.innerHTML = `
+      <span style="font-weight:600;min-width:120px">${evo.from}</span>
+      <span class="arrow">&rarr;</span>
+      <span style="font-weight:600;color:#4caf50;min-width:120px">${evo.to}</span>
+      <span class="method ${methodClass}">${evo.method}${evo.item ? ': ' + evo.item : ''}</span>
+      ${btnHtml}`;
+    div.appendChild(el);
+  }
+}
+
+function evolve(from, to, form, item) {
+  const msg = item ? t('evoConfirmItem', from, to, item) : t('evoConfirm', from, to);
+  if (!confirm(msg)) return;
+  for (let i = 0; i < caughtData.length; i++) {
+    const c = caughtData[i];
+    const nameMatch = c.name.toLowerCase() === from.toLowerCase();
+    let formMatch = true;
+    if (form) formMatch = (c.form||'').trim().toLowerCase() === form.toLowerCase();
+    if (nameMatch && formMatch) {
+      if (item) {
+        const itemKey = item.toUpperCase();
+        const idx = itemsData.findIndex(it => it.name === itemKey);
+        if (idx < 0 || itemsData[idx].stock < 1) { showNotification('Need ' + item + ' to evolve'); return; }
+        itemsData[idx].stock--;
+        if (itemsData[idx].stock <= 0) itemsData.splice(idx, 1);
+      }
+      const oldName = c.name;
+      const oldForm = (c.form||'').trim();
+      caughtData[i].name = to;
+      if (oldForm) {
+        const evos = (EVOLUTION_MAP[(oldName.toLowerCase() + '|' + oldForm.toLowerCase())] || []);
+        let targetFormCsv = '';
+        for (const evo of evos) {
+          if (evo.evolucion.toLowerCase() === to.toLowerCase()) { targetFormCsv = (evo.forma_evolucion||'').trim(); break; }
+        }
+        if (targetFormCsv) caughtData[i].form = targetFormCsv;
+        else {
+          const prefix = oldForm.split(' ')[0];
+          const candidate = prefix + ' ' + to.charAt(0).toUpperCase() + to.slice(1).toLowerCase();
+          let found = false;
+          for (const k in POKEMON_DATA) {
+            if (POKEMON_DATA[k].name.toLowerCase() === to.toLowerCase() && (POKEMON_DATA[k].form||'').trim().toLowerCase() === candidate.toLowerCase()) { found = true; break; }
+          }
+          caughtData[i].form = found ? candidate : '';
+        }
+      }
+      saveStateToCache();
+      showNotification(t('evolved', from, to));
+      loadCaught();
+      loadEvolutions();
+      loadBestTeam();
+      renderItems();
+      return;
+    }
+  }
+  showNotification(t('evoFail'));
+}
+
+function evolveAll() {
+  if (!confirm(t('evoAllConfirm'))) return;
+  const levelCap = parseInt(localStorage.getItem('pk_level_cap')) || 14;
+  let evolvedCount = 0;
+  for (let i = 0; i < caughtData.length; i++) {
+    const c = caughtData[i];
+    const nameLower = c.name.toLowerCase();
+    const form = (c.form||'').trim();
+    const formKey = form.toLowerCase();
+    const key1 = nameLower + '|' + formKey;
+    const key2 = nameLower + '|';
+    const allEvos = (EVOLUTION_MAP[key1] || []).concat(EVOLUTION_MAP[key2] || []);
+    for (const evo of allEvos) {
+      const method = (evo.metodo||'').trim();
+      if (method !== 'Level') continue;
+      try { const req = parseInt(evo.valor); if (levelCap < req) continue; } catch(e) { continue; }
+      const evoFormCol = (evo.form||'').trim();
+      let evoKey = null;
+      if (evoFormCol) {
+        for (const k in POKEMON_DATA) {
+          const v = POKEMON_DATA[k];
+          if (v.name.toLowerCase() === evo.evolucion.toLowerCase() && (v.form||'').trim().toLowerCase() === evoFormCol.toLowerCase()) { evoKey = k; break; }
+        }
+      } else {
+        evoKey = findPokemonByBaseName(evo.evolucion);
+      }
+      if (evoKey) {
+        const oldName = c.name;
+        caughtData[i].name = POKEMON_DATA[evoKey].name;
+        if (form) {
+          const targetFormCsv = (evo.forma_evolucion||'').trim();
+          if (targetFormCsv) caughtData[i].form = targetFormCsv;
+          else {
+            const prefix = form.split(' ')[0];
+            const candidate = prefix + ' ' + caughtData[i].name.charAt(0).toUpperCase() + caughtData[i].name.slice(1).toLowerCase();
+            let found = false;
+            for (const k in POKEMON_DATA) {
+              if (POKEMON_DATA[k].name.toLowerCase() === caughtData[i].name.toLowerCase() && (POKEMON_DATA[k].form||'').trim().toLowerCase() === candidate.toLowerCase()) { found = true; break; }
+            }
+            caughtData[i].form = found ? candidate : '';
+          }
+        }
+        evolvedCount++;
+      }
+      break;
+    }
+  }
+  if (evolvedCount > 0) showNotification(t('evolvedCount', evolvedCount));
+  else showNotification(t('noLvlEvo'));
+  saveStateToCache();
+  loadCaught();
+  loadEvolutions();
+  loadBestTeam();
+}
+
+function comparePokemon() {
+  const name1 = document.getElementById('compareName1').value.trim();
+  const name2 = document.getElementById('compareName2').value.trim();
+  if (!name1 || !name2) { showNotification(t('compareBothReq')); return; }
+  const key1 = getNameKey(name1);
+  const key2 = getNameKey(name2);
+  if (!key1 || !key2) { showNotification(t('compareNotFound')); return; }
+  const p1 = POKEMON_DATA[key1];
+  const p2 = POKEMON_DATA[key2];
+  function calcEffectiveness(p) {
+    const defTypes = [p.type1];
+    if (p.type2.trim()) defTypes.push(p.type2.trim());
+    const results = {};
+    for (const atkType of ALL_TYPES) {
+      let mult = 1.0;
+      for (const dt of defTypes) mult *= (TYPE_CHART[atkType]||{})[dt] || 1.0;
+      if (!results[mult]) results[mult] = [];
+      results[mult].push(atkType);
+    }
+    return results;
+  }
+  renderCompare({pokemon1: p1, pokemon2: p2, effectiveness1: calcEffectiveness(p1), effectiveness2: calcEffectiveness(p2)});
+}
+
+function getStatColor(val) {
+  const colors = ['#FA5858', '#FAAC58', '#F7D358', '#F4FA58', '#82FA58', '#58FAAC'];
+  const ranges = [40, 60, 80, 100, 120];
+  for (let i = 0; i < ranges.length; i++) {
+    if (val <= ranges[i]) return colors[i];
+  }
+  return colors[5];
+}
+
+function renderCompare(data) {
+  const p1 = data.pokemon1, p2 = data.pokemon2;
+  const eff1 = data.effectiveness1, eff2 = data.effectiveness2;
+  const div = document.getElementById('compareResults');
+  const maxStat = 255;
+  const stats = [['hp','HP'],['attack','ATK'],['defense','DEF'],['sp_atk','SPA'],['sp_def','SPD'],['speed','SPE']];
+
+  let html = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">';
+  for (const p of [p1, p2]) {
+    html += '<div class="card" style="padding:15px;text-align:center">'
+      + '<div style="font-size:1.2em;font-weight:700;margin-bottom:6px">' + p.name + (p.form && p.form.trim() ? ' (' + p.form + ')' : '') + '</div>'
+      + '<div style="margin:6px 0;display:flex;justify-content:center;gap:4px">'
+      + '<img src="/types/' + p.type1 + '.Png" alt="' + p.type1 + '" class="type-icon">'
+      + (p.type2.trim() ? '<img src="/types/' + p.type2.trim() + '.Png" alt="' + p.type2.trim() + '" class="type-icon">' : '')
+      + '</div>'
+      + '<div style="font-size:0.85em;color:#aaa">' + t('compareTotal') + ' <span style="color:#e94560;font-weight:700">' + p.total + '</span></div>'
+      + '</div>';
+  }
+  html += '</div>';
+
+  html += '<div class="card" style="padding:15px;margin-bottom:20px">'
+    + '<div style="font-size:1.1em;font-weight:700;margin-bottom:10px;color:#e94560">' + t('compareStats') + '</div>'
+    + '<div style="display:flex;align-items:center;margin-bottom:4px;font-size:0.8em;color:#666">'
+    + '<div style="flex:1;text-align:right">' + p1.name + '</div>'
+    + '<div style="min-width:42px;text-align:center"></div>'
+    + '<div style="flex:1;text-align:left">' + p2.name + '</div></div>';
+
+  for (const [key, label] of stats) {
+    const v1 = p1[key], v2 = p2[key];
+    const w1 = Math.min(v1 / maxStat * 100, 100), w2 = Math.min(v2 / maxStat * 100, 100);
+    html += '<div class="compare-stat-row">'
+      + '<div class="bar-side left">'
+      + '<span class="bar left" style="background:' + getStatColor(v1) + ';width:' + w1 + '%"></span>'
+      + '<span class="stat-val left">' + v1 + '</span>'
+      + '</div>'
+      + '<div class="stat-label">' + label + '</div>'
+      + '<div class="bar-side right">'
+      + '<span class="stat-val right">' + v2 + '</span>'
+      + '<span class="bar right" style="background:' + getStatColor(v2) + ';width:' + w2 + '%"></span>'
+      + '</div>'
+      + '</div>';
+  }
+  html += '</div>';
+
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">';
+  html += renderEffectiveness(p1, eff1);
+  html += renderEffectiveness(p2, eff2);
+  html += '</div>';
+
+  div.innerHTML = html;
+}
+
+function renderEffectiveness(pokemon, eff) {
+  const effKeys = {
+    '0.0': 'effImmune', '0.25': 'effResists4', '0.5': 'effResists2',
+    '1.0': 'effNeutral', '2.0': 'effWeak2', '4.0': 'effWeak4'
+  };
+  const effColors = {
+    '0.0': '#666', '0.25': '#4caf50', '0.5': '#66bb6a',
+    '1.0': '#888', '2.0': '#ff8c00', '4.0': '#e94560'
+  };
+  let html = '<div class="card" style="padding:15px">'
+    + '<div style="font-size:1em;font-weight:700;margin-bottom:10px;color:#e94560">' + t('compareMatchups', pokemon.name) + '</div>';
+  const sorted = Object.keys(eff).sort((a, b) => parseFloat(b) - parseFloat(a));
+  for (const mult of sorted) {
+    const label = effKeys[mult] ? t(effKeys[mult]) : 'x' + mult;
+    const col = effColors[mult] || '#aaa';
+    html += '<div class="eff-section">'
+      + '<div class="eff-label" style="color:' + col + '">' + label + '</div>'
+      + '<div class="eff-types">';
+    for (const t of eff[mult]) {
+      html += '<img src="/types/' + t + '.Png" alt="' + t + '" title="' + t + '" class="type-icon-sm">';
+    }
+    html += '</div></div>';
+  }
+  if (sorted.length === 0) html += '<div style="color:#666">No data</div>';
+  html += '</div>';
+  return html;
+}
+
+function saveBackup() {
+  const name = document.getElementById('saveNameInput').value.trim() || 'backup';
+  const cap = parseInt(document.getElementById('levelCapDisplay').textContent) || 14;
+  const saveData = {
+    name: name,
+    timestamp: new Date().toISOString(),
+    version: 1,
+    caught: caughtData,
+    items: itemsData,
+    level_cap: cap
+  };
+  saveStateToCache();
+  const blob = new Blob([JSON.stringify(saveData, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'pokemon_save_' + name.replace(/[^a-zA-Z0-9]/g, '_') + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showNotification('Saved as "' + name + '"');
+  document.getElementById('saveNameInput').value = '';
+}
+
+async function restoreBackup(event) {
+  const file = event.target.files[0];
+  if (!file) { event.target.value = ''; return; }
+  try {
+    const content = await file.text();
+    const data = JSON.parse(content);
+    if (!data.caught || !data.items) {
+      showNotification('Invalid save file: missing caught or items data');
+      event.target.value = '';
+      return;
+    }
+    if (!confirm('Restore backup "' + (data.name || 'unknown') + '"? Current data will be replaced.')) {
+      event.target.value = '';
+      return;
+    }
+    caughtData = data.caught;
+    itemsData = data.items;
+    const cap = data.level_cap || 14;
+    document.getElementById('levelCapDisplay').textContent = cap;
+    saveStateToCache();
+    renderCaught();
+    renderItems();
+    loadBestTeam();
+    loadEvolutions();
+    showNotification('Backup "' + (data.name || 'unknown') + '" restored!');
+  } catch(e) {
+    showNotification('Failed to load save file: ' + e.message);
+  }
+  event.target.value = '';
+}
+
+function newGame() {
+  if (!confirm('Start a new game? Current data will be lost!')) return;
+  if (!confirm('Really? All data will be lost forever!')) return;
+  caughtData = [];
+  itemsData = [];
+  document.getElementById('levelCapDisplay').textContent = 14;
+  gymMaxIdx = -1;
+  document.querySelectorAll('.gym-btn').forEach(b => b.classList.remove('gym-active'));
+  try { localStorage.setItem('pk_level_cap', '14'); } catch(e) {}
+  saveStateToCache();
+  renderCaught();
+  renderItems();
+  loadBestTeam();
+  loadEvolutions();
+  document.getElementById('addNotification').innerHTML = '';
+  showNotification('New game started!');
+}
+
+init();
+</script>
+</body>
 </html>
