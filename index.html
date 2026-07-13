@@ -689,6 +689,8 @@ function setupCompareAutocomplete(inputId, listId) {
   const input = document.getElementById(inputId);
   const list = document.getElementById(listId);
   input.addEventListener('input', function() {
+    delete this.dataset.compareKey;
+    delete this.dataset.compareForm;
     const val = this.value.trim();
     list.innerHTML = '';
     if (val.length < 1) return;
@@ -706,8 +708,24 @@ function setupCompareAutocomplete(inputId, listId) {
       const formIndicator = hasRegionalForms(p.name) ? ' <span style="color:#e94560;font-size:0.75em;font-weight:700">[Forms]</span>' : '';
       div.innerHTML = `<span>${p.name}${formIndicator}</span><span class="info">Total: ${p.total}</span>`;
       div.addEventListener('click', function() {
-        input.value = p.name;
-        list.innerHTML = '';
+        const forms = [];
+        for (const k in POKEMON_DATA) {
+          if (POKEMON_DATA[k].name === p.name) forms.push({...POKEMON_DATA[k], sprite_name: buildSpriteName(p.name, POKEMON_DATA[k].form), regional: isRegionalForm(POKEMON_DATA[k].form)});
+        }
+        if (forms.length > 1 && forms.some(f => f.regional)) {
+          showFormPicker(forms, '', function(name, form) {
+            const key = name + (form ? '|' + form : '');
+            input.value = name + (form ? ' (' + form + ')' : '');
+            input.dataset.compareKey = key;
+            input.dataset.compareForm = form || '';
+            list.innerHTML = '';
+          });
+        } else {
+          input.value = p.name;
+          input.dataset.compareKey = p.name;
+          input.dataset.compareForm = '';
+          list.innerHTML = '';
+        }
       });
       list.appendChild(div);
     }
@@ -744,7 +762,7 @@ function showNotification(msg) {
 
 let _pendingNick = '';
 
-function showFormPicker(forms, nick) {
+function showFormPicker(forms, nick, onSelect) {
   _pendingNick = nick;
   const modal = document.getElementById('formModal');
   document.getElementById('formPokeTitle').textContent = forms[0].name + ' - ' + t('chooseForm');
@@ -761,7 +779,11 @@ function showFormPicker(forms, nick) {
       <div class="form-type">${getTypeBadge(f.type1)} ${getTypeBadge(f.type2)}</div>`;
     div.onclick = () => {
       modal.style.display = 'none';
-      doAddCaught(f.name, f.form || '', _pendingNick);
+      if (onSelect) {
+        onSelect(f.name, f.form || '');
+      } else {
+        doAddCaught(f.name, f.form || '', _pendingNick);
+      }
     };
     options.appendChild(div);
   }
@@ -1199,11 +1221,15 @@ function evolveAll() {
 }
 
 function comparePokemon() {
-  const name1 = document.getElementById('compareName1').value.trim();
-  const name2 = document.getElementById('compareName2').value.trim();
+  const input1 = document.getElementById('compareName1');
+  const input2 = document.getElementById('compareName2');
+  const name1 = input1.value.trim();
+  const name2 = input2.value.trim();
   if (!name1 || !name2) { showNotification(t('compareBothReq')); return; }
-  const key1 = getNameKey(name1);
-  const key2 = getNameKey(name2);
+  let key1 = input1.dataset.compareKey;
+  if (!key1 || !POKEMON_DATA[key1]) key1 = getNameKey(name1);
+  let key2 = input2.dataset.compareKey;
+  if (!key2 || !POKEMON_DATA[key2]) key2 = getNameKey(name2);
   if (!key1 || !key2) { showNotification(t('compareNotFound')); return; }
   const p1 = POKEMON_DATA[key1];
   const p2 = POKEMON_DATA[key2];
@@ -1213,7 +1239,7 @@ function comparePokemon() {
     const results = {};
     for (const atkType of ALL_TYPES) {
       let mult = 1.0;
-      for (const dt of defTypes) mult *= (TYPE_CHART[atkType]||{})[dt] || 1.0;
+      for (const dt of defTypes) { const v = (TYPE_CHART[atkType]||{})[dt]; mult *= v !== undefined ? v : 1.0; }
       if (!results[mult]) results[mult] = [];
       results[mult].push(atkType);
     }
@@ -1317,10 +1343,11 @@ function saveBackup() {
   const saveData = {
     name: name,
     timestamp: new Date().toISOString(),
-    version: 1,
+    version: 2,
     caught: caughtData,
     items: itemsData,
-    level_cap: cap
+    level_cap: cap,
+    gym_max_idx: gymMaxIdx
   };
   saveStateToCache();
   const blob = new Blob([JSON.stringify(saveData, null, 2)], {type: 'application/json'});
@@ -1353,6 +1380,10 @@ async function restoreBackup(event) {
     itemsData = data.items;
     const cap = data.level_cap || 14;
     document.getElementById('levelCapDisplay').textContent = cap;
+    gymMaxIdx = (data.gym_max_idx !== undefined) ? data.gym_max_idx : -1;
+    document.querySelectorAll('.gym-btn').forEach(b => {
+      b.classList.toggle('gym-active', parseInt(b.dataset.idx) <= gymMaxIdx);
+    });
     saveStateToCache();
     renderCaught();
     renderItems();
