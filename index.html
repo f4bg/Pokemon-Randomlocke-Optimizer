@@ -1311,12 +1311,12 @@ function renderCompare(data) {
 
 function renderEffectiveness(pokemon, eff) {
   const effKeys = {
-    '0.0': 'effImmune', '0.25': 'effResists4', '0.5': 'effResists2',
-    '1.0': 'effNeutral', '2.0': 'effWeak2', '4.0': 'effWeak4'
+    '0': 'effImmune', '0.25': 'effResists4', '0.5': 'effResists2',
+    '1': 'effNeutral', '2': 'effWeak2', '4': 'effWeak4'
   };
   const effColors = {
-    '0.0': '#666', '0.25': '#4caf50', '0.5': '#66bb6a',
-    '1.0': '#888', '2.0': '#ff8c00', '4.0': '#e94560'
+    '0': '#888', '0.25': '#42a5f5', '0.5': '#66bb6a',
+    '1': '#ffffff', '2': '#ff8c00', '4': '#e94560'
   };
   let html = '<div class="card" style="padding:15px">'
     + '<div style="font-size:1em;font-weight:700;margin-bottom:10px;color:#e94560">' + t('compareMatchups', pokemon.name) + '</div>';
