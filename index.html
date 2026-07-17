@@ -188,6 +188,88 @@ h2 { margin-bottom: 15px; font-size: 1.4em; border-bottom: 2px solid #16213e; pa
 .eff-section { margin-bottom:10px; }
 .eff-section .eff-label { font-size:0.8em; font-weight:600; margin-bottom:4px; }
 .eff-types { display:flex; flex-wrap:wrap; gap:4px; }
+.battle-summary { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin-bottom:16px; }
+.battle-stat-card { background:#1a1a2e; border-radius:8px; padding:12px; text-align:center; }
+.battle-stat-card .label { font-size:0.75em; color:#888; margin-bottom:4px; }
+.battle-stat-card .value { font-size:1.4em; font-weight:700; }
+.battle-stat-card .value.good { color:#4caf50; }
+.battle-stat-card .value.bad { color:#e94560; }
+.battle-stat-card .value.neutral { color:#ffeb3b; }
+.team-weakness-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.type-effectiveness-row { display:flex; align-items:center; gap:8px; padding:3px 0; font-size:0.85em; }
+.type-effectiveness-row .type-icon-vs { width:32px; height:auto; }
+.type-effectiveness-row .mult-badge { display:inline-block; padding:1px 8px; border-radius:10px; font-size:0.75em; font-weight:700; min-width:32px; text-align:center; }
+.enemy-slot { display:flex; align-items:center; gap:8px; background:#1a1a2e; border-radius:8px; padding:8px; }
+.enemy-slot img { width:48px; height:48px; image-rendering:pixelated; border-radius:4px; background:#111; }
+.enemy-slot .info { flex:1; min-width:0; }
+.enemy-slot .name { font-weight:600; font-size:0.9em; }
+.enemy-slot .types { font-size:0.75em; color:#aaa; }
+.enemy-slot .remove { cursor:pointer; color:#e94560; font-weight:700; padding:4px; }
+.enemy-slot .remove:hover { color:#ff6b6b; }
+
+/* VS Analysis Pro */
+.vs-team-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:6px; margin-bottom:12px; }
+.vs-poke-card { background:#1a1a2e; border-radius:8px; padding:8px; text-align:center; border:1px solid #333; position:relative; }
+.vs-poke-card.you { border-color:#2d6b3f; }
+.vs-poke-card.enemy { border-color:#8b2d3f; }
+.vs-poke-card .sprite { width:56px; height:56px; image-rendering:pixelated; margin:0 auto; display:block; }
+.vs-poke-card .pname { font-weight:700; font-size:0.8em; margin:2px 0; }
+.vs-poke-card .ptypes { font-size:0.65em; margin-bottom:4px; }
+.vs-poke-card .stat-row { display:flex; justify-content:center; gap:2px; margin:3px 0; flex-wrap:wrap; }
+.vs-poke-card .remove-tag { position:absolute; top:2px; right:4px; cursor:pointer; color:#e94560; font-weight:700; font-size:0.9em; padding:2px; }
+.vs-poke-card .remove-tag:hover { color:#ff6b6b; }
+.vs-poke-card .stat-bars { margin-top:5px; }
+.vs-poke-card .stat-bar-row { display:flex; align-items:center; gap:3px; margin:2px 0; height:14px; }
+.vs-poke-card .stat-bar-label { font-size:0.6em; font-weight:700; min-width:26px; text-align:right; }
+.vs-poke-card { --c-hp:#ff1744; --c-attack:#f57c00; --c-defense:#388e3c; --c-sp_atk:#7b1fa2; --c-sp_def:#1976d2; --c-speed:#f9a825; --c-total:#c62828; }
+.vs-poke-card .stat-bar-track { flex:1; height:12px; background:#1a1a2e; border-radius:6px; overflow:hidden; position:relative; border:1px solid #3a3a4e; }
+.vs-poke-card .stat-bar-fill { height:100%; border-radius:5px; transition:width 0.4s ease; }
+.vs-poke-card .stat-bar-val { font-size:0.6em; font-weight:700; min-width:26px; text-align:left; color:#fff; }
+.vs-poke-card .stat-bar-fill.hp { background:linear-gradient(90deg,#ff1744,#ff5252); box-shadow:inset 0 1px 0 rgba(255,255,255,0.2); }
+.vs-poke-card .stat-bar-fill.attack { background:linear-gradient(90deg,#f57c00,#ffa726); box-shadow:inset 0 1px 0 rgba(255,255,255,0.2); }
+.vs-poke-card .stat-bar-fill.defense { background:linear-gradient(90deg,#388e3c,#66bb6a); box-shadow:inset 0 1px 0 rgba(255,255,255,0.2); }
+.vs-poke-card .stat-bar-fill.sp_atk { background:linear-gradient(90deg,#7b1fa2,#ab47bc); box-shadow:inset 0 1px 0 rgba(255,255,255,0.2); }
+.vs-poke-card .stat-bar-fill.sp_def { background:linear-gradient(90deg,#1976d2,#42a5f5); box-shadow:inset 0 1px 0 rgba(255,255,255,0.2); }
+.vs-poke-card .stat-bar-fill.speed { background:linear-gradient(90deg,#f9a825,#fdd835); box-shadow:inset 0 1px 0 rgba(255,255,255,0.2); }
+.vs-poke-card .stat-bar-fill.total { background:linear-gradient(90deg,#c62828,#ef5350); box-shadow:inset 0 1px 0 rgba(255,255,255,0.2); }
+
+.vs-header { display:grid; grid-template-columns:1fr auto 1fr; gap:16px; align-items:center; margin-bottom:16px; }
+.vs-header .vs-divider { text-align:center; font-size:1.4em; font-weight:700; color:#e94560; }
+.vs-total-bar { height:6px; border-radius:3px; background:#333; overflow:hidden; margin:4px 0; display:flex; }
+.vs-total-bar .fill { height:100%; transition:width 0.5s; }
+.vs-total-bar .fill.you { background:#4caf50; }
+.vs-total-bar .fill.enemy { background:#e94560; }
+
+/* Coverage Grid */
+.coverage-grid-wrap { overflow-x:auto; margin-bottom:16px; }
+.coverage-grid { border-collapse:collapse; font-size:0.75em; width:100%; min-width:600px; }
+.coverage-grid th, .coverage-grid td { padding:3px 5px; text-align:center; border:1px solid #2a2a3e; white-space:nowrap; }
+.coverage-grid th { background:#0f3460; color:#e0e0e0; font-weight:600; font-size:0.75em; }
+.coverage-grid td.type-label { text-align:center; background:#1a1a2e; min-width:85px; padding:2px 4px; }
+.coverage-grid .cell-0 { background:#444; color:#999; }
+.coverage-grid .cell-025 { background:#1b5e20; color:#a5d6a7; font-weight:700; }
+.coverage-grid .cell-05 { background:#2e7d32; color:#c8e6c9; font-weight:600; }
+.coverage-grid .cell-1 { background:transparent; color:#e0e0e0; }
+.coverage-grid .cell-2 { background:#bf360c; color:#ffccbc; font-weight:700; }
+.coverage-grid .cell-4 { background:#b71c1c; color:#ffcdd2; font-weight:700; }
+
+/* Matchups */
+.vs-matchups { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px; }
+.vs-matchup-card { background:#1a1a2e; border-radius:8px; padding:10px; border:1px solid #333; }
+.vs-matchup-card .mu-header { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+.vs-matchup-card .mu-header .arrow { color:#e94560; font-weight:700; font-size:1.1em; }
+.vs-matchup-card .mu-header img { width:36px; height:36px; image-rendering:pixelated; }
+.vs-matchup-card .mu-header .muname { font-weight:600; font-size:0.8em; flex:1; }
+.vs-matchup-card .mu-detail { font-size:0.75em; color:#aaa; display:flex; gap:4px; flex-wrap:wrap; }
+.vs-matchup-card .mu-detail .eff-badge { padding:1px 6px; border-radius:4px; font-weight:600; }
+.vs-summary-strip { display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap; justify-content:center; }
+.vs-summary-item { background:#1a1a2e; border-radius:6px; padding:6px 14px; text-align:center; min-width:80px; }
+.vs-summary-item .label { font-size:0.65em; color:#888; }
+.vs-summary-item .val { font-size:1.1em; font-weight:700; }
+.vs-summary-item .val.green { color:#4caf50; }
+.vs-summary-item .val.red { color:#e94560; }
+.vs-summary-item .val.yellow { color:#ffeb3b; }
+.vs-summary-item .val.gray { color:#888; }
 </style>
 </head>
 <body>
@@ -268,6 +350,7 @@ h2 { margin-bottom: 15px; font-size: 1.4em; border-bottom: 2px solid #16213e; pa
       <button class="tab" data-tab="team" data-i18n="tabTeam">Best Team</button>
       <button class="tab" data-tab="evolutions" data-i18n="tabEvolutions">Evolutions</button>
       <button class="tab" data-tab="compare" data-i18n="tabCompare">Compare</button>
+      <button class="tab" data-tab="teambattle" data-i18n="tabTeamBattle">VS Analysis</button>
     </div>
 
     <div class="tab-content active" id="tab-caught">
@@ -351,6 +434,39 @@ h2 { margin-bottom: 15px; font-size: 1.4em; border-bottom: 2px solid #16213e; pa
       <button class="btn btn-primary" onclick="comparePokemon()" data-i18n="compareBtn">Compare</button>
       <div id="compareResults" style="margin-top:20px"></div>
     </div>
+
+    <div class="tab-content" id="tab-teambattle">
+      <div style="display:grid;grid-template-columns:300px 1fr;gap:16px;margin-bottom:16px">
+        <div class="card" style="padding:12px">
+          <h2 style="font-size:1em;color:#4caf50;border:none;margin-bottom:8px" data-i18n="yourTeam">Your Team</h2>
+          <div id="yourTeamSlots" style="display:flex;flex-direction:column;gap:6px"></div>
+          <div style="margin-top:8px">
+            <div class="autocomplete" id="autocomplete-your">
+              <input type="text" id="yourPokeInput" data-i18n-placeholder="addYourPlaceholder" placeholder="Select your Pokemon..." style="width:100%;padding:6px;border:1px solid #333;border-radius:6px;background:#1a1a2e;color:#e0e0e0;font-size:0.8em;box-sizing:border-box">
+              <div class="autocomplete-items" id="your-autocomplete-list"></div>
+            </div>
+            <button class="btn btn-sm btn-success" onclick="addYourPokemon()" style="margin-top:4px;width:100%;font-size:0.8em;padding:6px">+ Add</button>
+          </div>
+        </div>
+        <div class="card" style="padding:12px">
+          <h2 style="font-size:1em;color:#e94560;border:none;margin-bottom:8px" data-i18n="enemyTeam">Enemy Team</h2>
+          <div id="enemyTeamSlots" style="display:flex;flex-direction:column;gap:6px"></div>
+          <div style="margin-top:8px">
+            <div class="autocomplete" id="autocomplete-enemy">
+              <input type="text" id="enemyPokeInput" data-i18n-placeholder="addEnemyPlaceholder" placeholder="Add enemy Pokemon..." style="width:100%;padding:6px;border:1px solid #333;border-radius:6px;background:#1a1a2e;color:#e0e0e0;font-size:0.8em;box-sizing:border-box">
+              <div class="autocomplete-items" id="enemy-autocomplete-list"></div>
+            </div>
+            <button class="btn btn-sm btn-danger" onclick="addEnemyPokemon()" style="margin-top:4px;width:100%;font-size:0.8em;padding:6px">+ Add</button>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:12px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-sm" onclick="clearTeam('your')" style="background:#333;color:#e0e0e0;font-size:0.75em;padding:4px 10px" data-i18n="clearYourTeam">Clear Your Team</button>
+        <button class="btn btn-sm" onclick="clearTeam('enemy')" style="background:#333;color:#e0e0e0;font-size:0.75em;padding:4px 10px" data-i18n="clearEnemyTeam">Clear Enemy Team</button>
+        <button class="btn btn-sm" onclick="clearTeam('all')" style="background:#333;color:#e0e0e0;font-size:0.75em;padding:4px 10px" data-i18n="clearBoth">Clear Both</button>
+      </div>
+      <div id="battleAnalysis"></div>
+    </div>
   </div>
 </div>
 
@@ -403,6 +519,32 @@ const LANG = {
     effNeutral: 'Neutral (x1)',
     effWeak2: 'Weak (x2)',
     effWeak4: 'Weak (x4)',
+    tabTeamBattle: 'VS Analysis',
+    yourTeam: 'Your Team',
+    enemyTeam: 'Enemy Team',
+    addEnemyPlaceholder: 'Add enemy Pokemon...',
+    addEnemy: 'Add Enemy',
+    addYourPlaceholder: 'Select from your Pokemon...',
+    clearYourTeam: 'Clear Your Team',
+    clearEnemyTeam: 'Clear Enemy Team',
+    clearBoth: 'Clear Both',
+    vsAnalysisTitle: 'Team Battle Analysis',
+    vsOffense: 'Offensive Coverage',
+    vsDefense: 'Defensive Weaknesses',
+    vsAvgStats: 'Avg Stats',
+    vsTotalStats: 'Total Stats',
+    vsTypeCoverage: 'Type Coverage',
+    vsCoverageLabel: 'can hit super effectively:',
+    vsWeakToLabel: 'weak to:',
+    vsResistsLabel: 'resists:',
+    vsImmuneLabel: 'immune to:',
+    vsTeamEmpty: 'No Pokemon on your team. Catch some Pokemon first!',
+    vsEnemyEmpty: 'No enemy Pokemon added.',
+    vsMax6: 'Maximum 6 Pokemon per team',
+    vsCoverageScore: 'Coverage Score',
+    vsDefenseScore: 'Defense Score',
+    vsOverall: 'Overall',
+    vsSlot: 'Slot',
   },
   es: {
     title: 'Optimizador de Equipo Pok\u00e9mon', addPokemon: 'Agregar Pok\u00e9mon', pokeNameLabel: 'Nombre del Pok\u00e9mon',
@@ -450,6 +592,32 @@ const LANG = {
     effNeutral: 'Neutral (x1)',
     effWeak2: 'D\u00e9bil (x2)',
     effWeak4: 'D\u00e9bil (x4)',
+    tabTeamBattle: 'An\u00e1lisis VS',
+    yourTeam: 'Tu Equipo',
+    enemyTeam: 'Equipo Enemigo',
+    addEnemyPlaceholder: 'Agregar Pokemon enemigo...',
+    addEnemy: 'Agregar Enemigo',
+    addYourPlaceholder: 'Selecciona de tus Pokemon...',
+    clearYourTeam: 'Limpiar Tu Equipo',
+    clearEnemyTeam: 'Limpiar Equipo Enemigo',
+    clearBoth: 'Limpiar Ambos',
+    vsAnalysisTitle: 'An\u00e1lisis de Batalla de Equipos',
+    vsOffense: 'Cobertura Ofensiva',
+    vsDefense: 'Debilidades Defensivas',
+    vsAvgStats: 'Stats Promedio',
+    vsTotalStats: 'Stats Totales',
+    vsTypeCoverage: 'Cobertura de Tipos',
+    vsCoverageLabel: 'puede golpear super efectivo:',
+    vsWeakToLabel: 'd\u00e9bil a:',
+    vsResistsLabel: 'resistente a:',
+    vsImmuneLabel: 'inmune a:',
+    vsTeamEmpty: 'No hay Pokemon en tu equipo. \u00a1Atrapa algunos primero!',
+    vsEnemyEmpty: 'No hay Pokemon enemigos agregados.',
+    vsMax6: 'M\u00e1ximo 6 Pokemon por equipo',
+    vsCoverageScore: 'Punt. Cobertura',
+    vsDefenseScore: 'Punt. Defensa',
+    vsOverall: 'General',
+    vsSlot: 'Espacio',
   }
 };
 function t(key, ...args) {
@@ -468,6 +636,9 @@ function toggleLang() {
   loadBestTeam();
   queryByStat();
   loadEvolutions();
+  renderTeamSlots(battleYourTeam, 'your');
+  renderTeamSlots(battleEnemyTeam, 'enemy');
+  renderBattleAnalysis();
 }
 
 function _norm(s) { return s.toLowerCase().trim().replace(/-/g, '').replace(/'/g, '').replace(/\./g, '').replace(/ /g, ''); }
@@ -529,6 +700,9 @@ function init() {
   setupItemAutocomplete();
   setupCompareAutocomplete('compareName1', 'compare-autocomplete-list1');
   setupCompareAutocomplete('compareName2', 'compare-autocomplete-list2');
+  setupTeamAutocomplete('yourPokeInput', 'your-autocomplete-list', 'autocomplete-your', true);
+  setupTeamAutocomplete('enemyPokeInput', 'enemy-autocomplete-list', 'autocomplete-enemy', false);
+  loadBattleTeams();
   setupTabs();
 }
 
@@ -1413,6 +1587,279 @@ function newGame() {
   document.getElementById('addNotification').innerHTML = '';
   showNotification('New game started!');
 }
+
+// ---- Pro Team Battle Section ----
+let battleYourTeam = [];
+let battleEnemyTeam = [];
+
+function setupTeamAutocomplete(inputId, listId, wrapperId, isYourTeam) {
+  const input = document.getElementById(inputId);
+  const list = document.getElementById(listId);
+  const wrapper = document.getElementById(wrapperId);
+  input.addEventListener('input', function() {
+    delete this.dataset.pokeKey; delete this.dataset.pokeForm;
+    const val = this.value.trim(); list.innerHTML = '';
+    if (val.length < 1) return;
+    const q = val.toLowerCase();
+    const seen = new Set(); const results = [];
+    let pool = isYourTeam
+      ? caughtData.filter(c => c.stats && c.stats.name).map(c => ({name: c.name, form: c.form||'', stats: c.stats}))
+      : Object.values(POKEMON_DATA).filter(p => { if (seen.has(p.name)) return false; seen.add(p.name); return true; }).map(p => ({name: p.name, form: p.form||'', stats: p}));
+    seen.clear();
+    for (const p of pool) if (!seen.has(p.name) && p.name.toLowerCase().includes(q)) { seen.add(p.name); results.push(p); }
+    results.sort((a,b) => (b.stats.total||0) - (a.stats.total||0));
+    for (const p of results.slice(0, 20)) {
+      const div = document.createElement('div'); div.className = 'autocomplete-item';
+      const extra = isYourTeam ? '' : (hasRegionalForms(p.name) ? ' <span style="color:#e94560;font-size:0.75em;font-weight:700">[Forms]</span>' : '');
+      div.innerHTML = `<span>${p.name}${extra}</span><span class="info">Total: ${p.stats.total||0}</span>`;
+      div.addEventListener('click', function() {
+        if (!isYourTeam && hasRegionalForms(p.name)) {
+          const forms = Object.values(POKEMON_DATA).filter(v => v.name===p.name).map(v => ({...v, sprite_name: buildSpriteName(p.name, v.form), regional: isRegionalForm(v.form)}));
+          if (forms.length > 1 && forms.some(f => f.regional)) {
+            showFormPicker(forms, '', function(name, form) {
+              const fk = Object.keys(POKEMON_DATA).find(k => POKEMON_DATA[k].name===name && (POKEMON_DATA[k].form||'')===form);
+              input.value = name + (form ? ' ('+form+')' : ''); input.dataset.pokeKey = fk; input.dataset.pokeForm = form||''; list.innerHTML = '';
+            }); return;
+          }
+        }
+        input.value = p.name; input.dataset.pokeKey = p.name; input.dataset.pokeForm = p.form||''; list.innerHTML = '';
+      });
+      list.appendChild(div);
+    }
+  });
+  document.addEventListener('click', function(e) { if (wrapper && wrapper.contains(e.target)) return; list.innerHTML = ''; });
+}
+
+function saveBattleTeams() {
+  try { localStorage.setItem('pk_battle_your', JSON.stringify(battleYourTeam.map(m=>({name:m.name,form:m.form||''})))); }catch(e){}
+  try { localStorage.setItem('pk_battle_enemy', JSON.stringify(battleEnemyTeam.map(m=>({name:m.name,form:m.form||''})))); }catch(e){}
+}
+
+function loadBattleTeams() {
+  try {
+    const yd = localStorage.getItem('pk_battle_your');
+    if (yd) { const arr = JSON.parse(yd); battleYourTeam = arr.map(({name,form})=>{const key=getNameKey(name);const p=POKEMON_DATA[key]||{};return{name:p.name||name,form:form||'',key,stats:p};}).filter(m=>m.stats.name); }
+    const ed = localStorage.getItem('pk_battle_enemy');
+    if (ed) { const arr = JSON.parse(ed); battleEnemyTeam = arr.map(({name,form})=>{const key=getNameKey(name);const p=POKEMON_DATA[key]||{};return{name:p.name||name,form:form||'',key,stats:p};}).filter(m=>m.stats.name); }
+  } catch(e) {}
+  renderTeamSlots(battleYourTeam,'your'); renderTeamSlots(battleEnemyTeam,'enemy');
+  if (battleYourTeam.length && battleEnemyTeam.length) renderBattleAnalysis();
+}
+
+function addToTeam(team, inputId) {
+  if (team.length >= 6) { showNotification(t('vsMax6')); return; }
+  const input = document.getElementById(inputId); const name = input.value.trim();
+  if (!name) return;
+  let form = input.dataset.pokeForm||'', key = input.dataset.pokeKey;
+  if (!key || !POKEMON_DATA[key]) {
+    if (form) { const k = Object.keys(POKEMON_DATA).find(k => POKEMON_DATA[k].name.toLowerCase()===name.toLowerCase() && (POKEMON_DATA[k].form||'').toLowerCase()===form.toLowerCase()); key = k; }
+    if (!key) key = getNameKey(name);
+  }
+  if (!key || !POKEMON_DATA[key]) { showNotification('Pokemon not found'); return; }
+  const p = POKEMON_DATA[key];
+  team.push({name: p.name, form: p.form||'', key, stats: p});
+  input.value = ''; input.dataset.pokeKey = ''; input.dataset.pokeForm = '';
+  renderTeamSlots(team, team===battleYourTeam?'your':'enemy'); renderBattleAnalysis(); saveBattleTeams();
+}
+
+function addYourPokemon() { addToTeam(battleYourTeam, 'yourPokeInput'); }
+function addEnemyPokemon() { addToTeam(battleEnemyTeam, 'enemyPokeInput'); }
+
+function removeFromTeam(team, idx) { team.splice(idx,1); const s = team===battleYourTeam?'your':'enemy'; renderTeamSlots(team, s); renderBattleAnalysis(); saveBattleTeams(); }
+
+function clearTeam(which) {
+  if (which==='your'||which==='all') battleYourTeam=[];
+  if (which==='enemy'||which==='all') battleEnemyTeam=[];
+  renderTeamSlots(battleYourTeam,'your'); renderTeamSlots(battleEnemyTeam,'enemy');
+  if (!battleYourTeam.length||!battleEnemyTeam.length) document.getElementById('battleAnalysis').innerHTML='';
+  else renderBattleAnalysis(); saveBattleTeams();
+}
+
+function renderTeamSlots(team, side) {
+  const div = document.getElementById(side==='your'?'yourTeamSlots':'enemyTeamSlots'); div.innerHTML='';
+  for (let i=0; i<team.length; i++) {
+    const e=team[i], form=e.form||'';
+    const slot = document.createElement('div'); slot.className='enemy-slot';
+    slot.innerHTML=`<img src="" alt="${e.name}" data-sprite="${e.name}" data-form="${form}">
+      <div class="info"><div class="name">${e.name}</div><div class="types">${getTypeBadge(e.stats.type1)} ${getTypeBadge(e.stats.type2)}</div></div>
+      <span class="remove" onclick="${side==='your'?'removeFromTeam(battleYourTeam,':'removeFromTeam(battleEnemyTeam,'}${i})">&times;</span>`;
+    div.appendChild(slot); loadSprite(slot.querySelector('img'));
+  }
+  for (let i=team.length; i<6; i++) {
+    const em = document.createElement('div'); em.className='enemy-slot'; em.style.cssText+=';opacity:0.4;justify-content:center';
+    em.innerHTML=`<span style="color:#666;font-size:0.8em">${t('vsSlot')} ${i+1}</span>`; div.appendChild(em);
+  }
+}
+
+function getMemberDefMult(member, atkType) {
+  const dt = [member.stats.type1]; if (member.stats.type2 && member.stats.type2.trim()) dt.push(member.stats.type2.trim());
+  let m = 1; for (const d of dt) m *= (TYPE_CHART[atkType]||{})[d]||1.0; return m;
+}
+
+function getTeamDefenseProfile(team) {
+  const profile = {};
+  for (const atkType of ALL_TYPES) {
+    let worst = 1;
+    for (const def of team) { const m = getMemberDefMult(def, atkType); if (m > worst) worst = m; }
+    profile[atkType] = worst;
+  }
+  return profile;
+}
+
+function getTeamAvgStats(team) {
+  const s = {hp:0,attack:0,defense:0,sp_atk:0,sp_def:0,speed:0,total:0};
+  for (const m of team) for (const k in s) s[k] += (m.stats[k]||0);
+  const n = team.length||1; for (const k in s) s[k] = Math.round(s[k]/n); return s;
+}
+
+function getMemberStatBar(stats) {
+  const labels = {hp:'HP',attack:'ATK',defense:'DEF',sp_atk:'SPA',sp_def:'SPD',speed:'SPE',total:'TOT'};
+  const MAX_STAT = 255;
+  return '<div class="stat-bars">' + Object.entries(labels).map(([k,lb]) => {
+    const val = stats[k]||0;
+    const pct = Math.round(Math.min(val/MAX_STAT*100, 100));
+    return `<div class="stat-bar-row">
+      <span class="stat-bar-label" style="color:var(--c-${k},#aaa)">${lb}</span>
+      <div class="stat-bar-track"><div class="stat-bar-fill ${k}" style="width:${Math.max(pct,3)}%"></div></div>
+      <span class="stat-bar-val">${val}</span>
+    </div>`;
+  }).join('') + '</div>';
+}
+
+function renderTeamCards(team, side) {
+  return team.map((m, i) => {
+    const form = m.form||'';
+    return `<div class="vs-poke-card ${side}">
+      <span class="remove-tag" onclick="${side==='you'?'removeFromTeam(battleYourTeam,':'removeFromTeam(battleEnemyTeam,'}${i})">&times;</span>
+      <img class="sprite" src="" alt="${m.name}" data-sprite="${m.name}" data-form="${form}">
+      <div class="pname">${m.name}</div>
+      <div class="ptypes">${m.stats.type1?`<img src="/types/${m.stats.type1}.Png" alt="${m.stats.type1}" style="width:90px;height:auto;vertical-align:middle">`:''}${m.stats.type2&&m.stats.type2.trim()?`<img src="/types/${m.stats.type2.trim()}.Png" alt="${m.stats.type2.trim()}" style="width:90px;height:auto;vertical-align:middle">`:''}</div>
+      ${getMemberStatBar(m.stats)}
+    </div>`;
+  }).join('');
+}
+
+function renderCoverageGrid(teamA, teamB) {
+  let html = '<div class="coverage-grid-wrap"><table class="coverage-grid"><thead><tr><th>Type</th>';
+  for (const m of teamA) html += `<th>${m.name}</th>`;
+  html += '<th style="color:#4caf50">YOUR</th>';
+  for (const m of teamB) html += `<th>${m.name}</th>`;
+  html += '<th style="color:#e94560">ENEMY</th></tr></thead><tbody>';
+
+  for (const atkType of ALL_TYPES) {
+    html += `<tr><td class="type-label"><img src="/types/${atkType}.Png" alt="${atkType}" style="width:72px;height:auto;display:block;margin:0 auto"></td>`;
+    for (const m of teamA) {
+      const v = getMemberDefMult(m, atkType); const cls = `cell-${String(v).replace('.','')}`;
+      html += `<td class="${cls}">${v===0?'0':v<1?'½':'×'+v}</td>`;
+    }
+    const yMult = getTeamDefenseProfile(teamA)[atkType];
+    html += `<td class="cell-${String(yMult).replace('.','')}" style="font-weight:700;border-color:#4caf50">${yMult===0?'0':yMult<1?'½':'×'+yMult}</td>`;
+    for (const m of teamB) {
+      const v = getMemberDefMult(m, atkType); const cls = `cell-${String(v).replace('.','')}`;
+      html += `<td class="${cls}">${v===0?'0':v<1?'½':'×'+v}</td>`;
+    }
+    const eMult = getTeamDefenseProfile(teamB)[atkType];
+    html += `<td class="cell-${String(eMult).replace('.','')}" style="font-weight:700;border-color:#e94560">${eMult===0?'0':eMult<1?'½':'×'+eMult}</td>`;
+    html += '</tr>';
+  }
+  html += '</tbody></table></div>';
+  return html;
+}
+
+function renderMatchups(teamA, teamB) {
+  let html = '<div class="vs-matchups">';
+  for (const your of teamA) {
+    const atkTypes = [your.stats.type1];
+    if (your.stats.type2 && your.stats.type2.trim()) atkTypes.push(your.stats.type2.trim());
+    const threats = [];
+    for (const enemy of teamB) {
+      let best = 0, worst = 4;
+      for (const atk of atkTypes) {
+        for (const dt of [enemy.stats.type1].concat(enemy.stats.type2&&enemy.stats.type2.trim()?[enemy.stats.type2.trim()]:[])) {
+          const mult = (TYPE_CHART[atk]||{})[dt]||1;
+          if (mult > best) best = mult;
+          if (mult < worst) worst = mult;
+        }
+      }
+      threats.push({enemy, best, worst});
+    }
+    threats.sort((a,b) => b.best - a.best);
+    const bestThreat = threats[0];
+    const worstThreat = threats[threats.length-1];
+    const form = your.form||'';
+    html += `<div class="vs-matchup-card">
+      <div class="mu-header">
+        <img src="" alt="${your.name}" data-sprite="${your.name}" data-form="${form}">
+        <span class="muname">${your.name}</span>
+        <span class="arrow">→</span>
+        <span style="font-size:0.7em;color:#aaa">best vs</span>
+      </div>
+      <div class="mu-detail">
+        <span style="font-weight:600;color:#e0e0e0">${bestThreat.enemy.name}</span>
+        <span class="eff-badge" style="background:${bestThreat.best>1?'#e94560':'#4caf50'};color:#fff">SE vs ${bestThreat.best>1?'✓': '✗'}</span>
+        <span style="color:#666">|</span>
+        <span style="color:#aaa">Your ${your.name} deals ${bestThreat.best>1?'<b style="color:#e94560">×'+bestThreat.best+'</b>':'<b>×'+bestThreat.best+'</b>'} to ${bestThreat.enemy.name}</span>
+      </div>
+      <div class="mu-detail" style="margin-top:4px">
+        <span style="color:#aaa">Weakest vs:</span>
+        <span style="font-weight:600;color:#e0e0e0">${worstThreat.enemy.name}</span>
+        <span class="eff-badge" style="background:#666;color:#fff">×${worstThreat.worst<1?'½':worstThreat.worst}</span>
+      </div>
+    </div>`;
+  }
+  html += '</div>';
+  return html;
+}
+
+function renderBattleAnalysis() {
+  const yT = battleYourTeam, eT = battleEnemyTeam;
+  if (!yT.length || !eT.length) { document.getElementById('battleAnalysis').innerHTML=''; return; }
+
+  const yDef = getTeamDefenseProfile(yT), eDef = getTeamDefenseProfile(eT);
+  const yAvg = getTeamAvgStats(yT), eAvg = getTeamAvgStats(eT);
+  const yTotal = yT.reduce((s,m)=>s+(m.stats.total||0),0);
+  const eTotal = eT.reduce((s,m)=>s+(m.stats.total||0),0);
+  const yWeak = ALL_TYPES.filter(t=>yDef[t]>=2).length;
+  const eWeak = ALL_TYPES.filter(t=>eDef[t]>=2).length;
+  const yRes = ALL_TYPES.filter(t=>yDef[t]<=0.5&&yDef[t]>0).length;
+  const eRes = ALL_TYPES.filter(t=>eDef[t]<=0.5&&eDef[t]>0).length;
+  const yImm = ALL_TYPES.filter(t=>yDef[t]===0).length;
+  const eImm = ALL_TYPES.filter(t=>eDef[t]===0).length;
+  const yCover = Math.round(ALL_TYPES.filter(t=>yT.some(m=>{const at=[m.stats.type1];if(m.stats.type2&&m.stats.type2.trim())at.push(m.stats.type2.trim());return at.some(a=>(TYPE_CHART[a]||{})[t]>1);})).length/ALL_TYPES.length*100);
+  const eCover = Math.round(ALL_TYPES.filter(t=>eT.some(m=>{const at=[m.stats.type1];if(m.stats.type2&&m.stats.type2.trim())at.push(m.stats.type2.trim());return at.some(a=>(TYPE_CHART[a]||{})[t]>1);})).length/ALL_TYPES.length*100);
+
+  let html = `<div class="card" style="padding:16px;margin-bottom:14px">`;
+
+  html += `<div class="vs-header">
+    <div style="text-align:right"><span style="font-weight:700;color:#4caf50;font-size:1.1em">${t('yourTeam')}</span><br><span style="color:#888;font-size:0.8em">${yT.length}/6</span></div>
+    <div class="vs-divider">⚔️</div>
+    <div style="text-align:left"><span style="font-weight:700;color:#e94560;font-size:1.1em">${t('enemyTeam')}</span><br><span style="color:#888;font-size:0.8em">${eT.length}/6</span></div>
+  </div>
+  <div class="vs-total-bar"><div class="fill you" style="width:${Math.round(yTotal/(yTotal+eTotal||1)*100)}%"></div><div class="fill enemy" style="width:${Math.round(eTotal/(yTotal+eTotal||1)*100)}%"></div></div>
+  <div style="display:flex;justify-content:space-between;font-size:0.7em;color:#888;margin-bottom:10px"><span>${yTotal} BST</span><span style="color:#e94560;font-weight:600">Total Stats</span><span>${eTotal} BST</span></div>`;
+
+  html += '<div class="vs-summary-strip">';
+  for (const [l,v,c] of [['Avg BST',yAvg.total+' / '+eAvg.total,''], ['Coverage',yCover+'% / '+eCover+'%',''], ['Weak',yWeak+' / '+eWeak,yWeak<=eWeak?'green':'red'], ['Resist',yRes+' / '+eRes,yRes>=eRes?'green':'red'], ['Immune',yImm+' / '+eImm,yImm>=eImm?'green':'red']])
+    html += `<div class="vs-summary-item"><div class="label">${l}</div><div class="val ${c}">${v}</div></div>`;
+  html += '</div>';
+
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">';
+  html += '<div>'+renderTeamCards(yT,'you')+'</div>';
+  html += '<div>'+renderTeamCards(eT,'enemy')+'</div>';
+  html += '</div>';
+
+  html += `<h3 style="font-size:0.9em;color:#e94560;margin-bottom:8px;border-bottom:1px solid #333;padding-bottom:6px">🛡️ Defensive Coverage</h3>`;
+  html += renderCoverageGrid(yT, eT);
+
+  html += `<h3 style="font-size:0.9em;color:#e94560;margin:14px 0 8px;border-bottom:1px solid #333;padding-bottom:6px">⚡ Critical Matchups</h3>`;
+  html += renderMatchups(yT, eT);
+
+  html += '</div>';
+  document.getElementById('battleAnalysis').innerHTML = html;
+
+  document.querySelectorAll('#battleAnalysis img[data-sprite]').forEach(img => loadSprite(img));
+}
+// ---- End Pro Team Battle Section ----
 
 init();
 </script>
